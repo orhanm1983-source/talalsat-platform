@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدروس - منصة TALALSAT</title>
+<style>
+  :root {
+    --primary: #2b6cb0;
+    --accent: #319795;
+    --danger: #e53e3e;
+    --bg-color: #f7fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+  }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background: var(--bg-color); max-width: 950px; margin: auto; color: #2d3748; }
+  
+  .header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 18px 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; border: 1px solid var(--border-color); }
+  .welcome-text { font-weight: 600; color: var(--primary); font-size: 16px; }
+  .btn-logout { background: #fff; color: var(--danger); border: 1px solid var(--danger); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+  .btn-logout:hover { background: var(--danger); color: #fff; }
+
+  .container { display: flex; flex-direction: column; gap: 20px; }
+  .course-card { background: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-right: 4px solid var(--primary); }
+  .course-card h3 { margin-top: 0; color: #1a202c; font-size: 18px; }
+  
+  .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 15px; background: #1a202c; border-radius: 8px; overflow: hidden; }
+  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+  .contact-box { background: var(--card-bg); padding: 25px; border-radius: 10px; margin-top: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+  .btn-send { background: var(--accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+  .btn-send:hover { background: #2c7a7b; }
+  .btn-test { background: #4299e1; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-right: 10px; }
+  .btn-test:hover { background: #3182ce; }
+  textarea { width: 100%; height: 90px; margin: 12px 0; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #f8fafc; }
+  textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+</style>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){ emailjs.init("kaJmN11jIcapGxZSh"); })();
+</script>
+</head>
+<body>
+
+<script>
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser) {
+  alert("يرجى تسجيل الدخول أولاً للمتابعة.");
+  location.href = "login.html";
+}
+</script>
+
+<div class="header">
+  <div class="welcome-text" id="welcomeMsg">مرحباً بك</div>
+  <button onclick="logout()" class="btn-logout">تسجيل الخروج</button>
+</div>
+
+<div class="container" id="coursesContainer">
+  <p style="text-align:center; color:#718096;">جاري تحميل الدروس من المنصة...</p>
+</div>
+
+<div class="contact-box">
+  <h3 style="color: var(--primary); margin-top:0;">تواصل مع المعلم 📩</h3>
+  <p style="color: #718096; font-size: 14px;">لديك سؤال أو استفسار حول الدروس؟ أرسله مباشرة إلى المعلم:</p>
+  <textarea id="studentMsg" placeholder="اكتب سؤالك هنا..."></textarea>
+  <div>
+    <button onclick="sendStudentQuestion()" class="btn-send">إرسال السؤال</button>
+    <button onclick="sendTestEmail()" class="btn-test">اختبار الإرسال</button>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvAPQ8w0anK6CkmLJuHjNMSlSf4trf0cU",
+    authDomain: "talalsat-platform.firebaseapp.com",
+    projectId: "talalsat-platform",
+    storageBucket: "talalsat-platform.firebasestorage.app",
+    messagingSenderId: "463319836026",
+    appId: "1:463319836026:web:55cff426cc874cc8d062c3",
+    measurementId: "G-NJ8R5QNP9H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  if (currentUser && currentUser.name) {
+    document.getElementById("welcomeMsg").innerText = "أهلاً بك، " + currentUser.name + " 📚 (TALALSAT)";
+  }
+
+  async function loadCourses() {
+    let container = document.getElementById("coursesContainer");
+    try {
+      const querySnapshot = await getDocs(collection(db, "courses"));
+      let html = "";
+      let i = 0;
+
+      querySnapshot.forEach((docSnap) => {
+        let course = docSnap.data();
+        // نتجاوز المستند التجريبي الفارغ إن وجد
+        if (!course.title || course.title === "مرحباً" || !course.video) return;
+        
+        i++;
+        let embedUrl = getEmbedUrl(course.video);
+        html += `
+          <div class="course-card">
+            <h3>درس ${i}: ${course.title}</h3>
+            ${embedUrl ? `
+              <div class="video-container">
+                <iframe src="${embedUrl}" allowfullscreen></iframe>
+              </div>
+            ` : `
+              <p><a href="${course.video}" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: none;">رابط المشاهدة الخارجي للدرس</a></p>
+            `}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html || "<div class='course-card'><p style='text-align:center; color:#718096; margin:0;'>لا توجد دروس متاحة حالياً.</p></div>";
+    } catch (e) {
+      container.innerHTML = "<div class='course-card'><p style='text-align:center; color:red;'>خطأ في تحميل الدروس من قاعدة البيانات.</p></div>";
+    }
+  }
+
+  loadCourses();
+
+  window.logout = function() {
+    localStorage.removeItem("currentUser");
+    location.href = "login.html";
+  }
+
+  function getEmbedUrl(url) {
+    if (!url) return null;
+    let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    return (match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null);
+  }
+
+  function sendEmailNotification(subject, messageText) {
+    var templateParams = {
+        from_name: currentUser ? currentUser.name : 'طالب',
+        message: messageText
+    };
+    return emailjs.send('service_oq1o551', 'template_my0rh1i', templateParams);
+  }
+
+  window.sendStudentQuestion = function() {
+    let msgInput = document.getElementById("studentMsg");
+    let msg = msgInput.value.trim();
+    if (!msg) { alert("يرجى كتابة الرسالة أولاً"); return; }
+    
+    sendEmailNotification("استفسار طالب", msg)
+      .then(() => { alert("تم إرسال سؤالك بنجاح!"); msgInput.value = ""; })
+      .catch((err) => { alert("حدث خطأ أثناء الإرسال."); console.log(err); });
+  }
+
+  window.sendTestEmail = function() {
+    sendEmailNotification("تجربة إرسال", "هذه رسالة اختبارية من منصة TALALSAT")
+      .then(() => alert("وصلت الرسالة بنجاح!"))
+      .catch((err) => alert("فشل الإرسال: " + JSON.stringify(err)));
+  }
+</script>
+</body>
+</html>
