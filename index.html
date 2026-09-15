@@ -3,275 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الدروس - منصة TALALSAT</title>
-<!-- مكتبة الأيقونات FontAwesome -->
+<title>منصة TALALSAT - الدورات التعليمية</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --bg-main: #eef2f6; 
+    --primary: #2b6cb0;
+    --primary-hover: #1a4975;
+    --accent: #319795;
+    --danger: #e53e3e;
+    --success: #38a169;
+    --bg-color: #f4f7f6;
     --card-bg: #ffffff;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
     --border-color: #e2e8f0;
-    --danger: #ef4444;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --shadow-soft: 0 10px 30px -5px rgba(43, 108, 176, 0.08);
   }
-
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-main);
-    color: var(--text-main);
-    margin: 0;
-    padding: 0;
-    direction: rtl;
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    padding: 30px; 
+    background: var(--bg-color); 
+    max-width: 1100px; 
+    margin: auto; 
+    color: #2d3748; 
   }
+  
+  .nav-bar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: var(--card-bg); 
+    padding: 18px 28px; 
+    border-radius: var(--radius-md); 
+    box-shadow: var(--shadow-soft); 
+    margin-bottom: 25px; 
+    border: 1px solid var(--border-color); 
+  }
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .platform-logo { height: 40px; width: auto; object-fit: contain; }
 
-  /* الشريط العلوي */
-  .top-nav { background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border-bottom: 1px solid var(--border-color); }
-  .user-profile { display: flex; align-items: center; gap: 14px; }
-  .user-avatar { width: 45px; height: 45px; background: #e0e7ff; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
-  .user-details h3 { margin: 0 0 2px 0; font-size: 16px; color: var(--text-main); }
-  .role-tag { display: inline-block; background: #f1f5f9; color: var(--text-muted); font-size: 12px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-  .logout-btn { background: #fee2e2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
-  .logout-btn:hover { background: #fecaca; }
+  button { padding: 11px 22px; cursor: pointer; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; transition: background 0.2s; }
+  button:hover { background: #2c7a7b; }
+  
+  .btn-danger { background: #fff5f5; color: var(--danger); border: 1px solid #fed7d7; padding: 8px 16px; font-size: 13px; border-radius: var(--radius-sm); font-weight: 700; }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
 
-  /* شريط الأخبار */
-  .news-ticker { background: #1e293b; color: #f8fafc; display: flex; align-items: center; padding: 10px 32px; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-  .news-label { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-left: 12px; white-space: nowrap; }
-  .news-ticker marquee { font-weight: 500; letter-spacing: 0.5px; }
+  .btn-primary { background: var(--primary); color: white; padding: 10px 20px; border-radius: var(--radius-sm); font-weight: bold; border: none; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--primary-hover); }
 
-  /* تخطيط الصفحة الرئيسي (أعمدة) */
-  .main-layout {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
+  .btn-admin { background: var(--primary); color: white; text-decoration: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+  .btn-admin:hover { background: var(--primary-hover); }
+
+  /* شبكة الدورات */
+  .courses-grid {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 24px;
-    align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
   }
-
-  @media (max-width: 850px) {
-    .main-layout { grid-template-columns: 1fr; }
-  }
-
-  /* القائمة الجانبية للدورات والدروس */
-  .sidebar {
+  .course-box {
     background: var(--card-bg);
-    border-radius: 16px;
-    padding: 20px;
+    padding: 25px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-    position: sticky;
-    top: 20px;
-  }
-  .sidebar h3 {
-    margin-top: 0;
-    font-size: 17px;
-    color: var(--text-main);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 12px;
-    margin-bottom: 16px;
-  }
-  .course-group {
-    margin-bottom: 16px;
-  }
-  .course-title-btn {
-    font-weight: bold;
-    color: var(--primary);
-    font-size: 15px;
-    margin-bottom: 8px;
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .lesson-list-side {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 12px 0;
-  }
-  .lesson-item-btn {
-    padding: 10px 14px;
-    margin: 4px 0;
-    background: #f8fafc;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13.5px;
-    color: var(--text-main);
-    width: 100%;
-    text-align: right;
-    transition: all 0.2s;
-    font-weight: 500;
-  }
-  .lesson-item-btn:hover {
-    background: #eef2ff;
-    border-color: #c7d2fe;
-    color: var(--primary);
-  }
-  .lesson-item-btn.active-lesson {
-    background: var(--primary);
-    color: white;
+  .course-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px -5px rgba(43, 108, 176, 0.15);
     border-color: var(--primary);
   }
 
-  /* الحاوية اليسرى للمحتوى */
-  .content-area {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  /* بطاقة الدرس */
-  .lesson-card { background: var(--card-bg); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); }
-  .lesson-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
-  .course-name { color: var(--primary); font-weight: bold; font-size: 15px; }
-  .lesson-number { background: #f1f5f9; color: var(--text-muted); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
-  .lesson-title-area h2 { margin: 0 0 20px 0; font-size: 22px; color: var(--text-main); }
-  .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000000; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-  .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-  .external-link-box { background: #f1f5f9; padding: 30px; text-align: center; border-radius: 12px; border: 1px dashed #cbd5e1; }
-  .external-link-box p { color: var(--text-muted); margin-top: 0; margin-bottom: 16px; font-size: 15px; }
-
-  /* أزرار ملحقات الدرس */
-  .lesson-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
-  .action-btn { flex: 1; min-width: 130px; padding: 12px; border-radius: 8px; border: 1px solid; cursor: pointer; font-weight: bold; font-size: 14px; text-align: center; transition: all 0.2s; text-decoration: none; display: inline-block; }
-  .quiz-btn { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
-  .quiz-btn:hover { background: #d1fae5; }
-  .resource-btn { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
-  .resource-btn:hover { background: #dbeafe; }
-  .ask-btn { background: #fffbeb; color: #d97706; border-color: #fde68a; }
-  .ask-btn:hover { background: #fef3c7; }
-  .disabled-btn { opacity: 0.5; cursor: not-allowed !important; background: #f1f5f9 !important; color: #94a3b8 !important; border-color: #e2e8f0 !important; }
-
-  /* صندوق التواصل */
-  .support-card { background: var(--card-bg); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); }
-  .support-card h3 { margin-top: 0; color: var(--text-main); font-size: 18px; }
-  .support-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
-  textarea { width: 100%; height: 110px; padding: 14px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #ffffff; resize: vertical; transition: all 0.2s; }
-  textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-  .actions { display: flex; gap: 12px; margin-top: 16px; }
-  .btn-primary, .btn-admin { color: white; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s; }
-  .btn-primary { background: var(--primary); }
-  .btn-primary:hover { background: var(--primary-hover); }
-  .btn-admin { background: #0ea5e9; }
-  .btn-admin:hover { background: #0284c7; }
-
-  /* تصميم أيقونات التواصل الاجتماعي */
-  .social-footer {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  }
-  .social-footer h3 {
-    margin-top: 0;
-    color: var(--text-main);
-    font-size: 16px;
-    margin-bottom: 16px;
-  }
-  .social-icons-container {
-    display: flex;
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
     justify-content: center;
-    gap: 16px;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
   }
-  .social-btn {
-    width: 48px;
-    height: 48px;
+  .modal-box {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .close-modal {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    width: 32px; height: 32px;
     border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    color: white;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
   }
-  .social-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-  }
-  .whatsapp-bg { background: #25D366; }
-  .telegram-bg { background: #0088cc; }
-  .facebook-bg { background: #1877F2; }
-  .email-bg { background: #EA4335; }
-</style>
+  .close-modal:hover { background: #cbd5e0; }
 
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){ emailjs.init("kaJmN11jIcapGxZSh"); })();
-</script>
+  .badge-active { background: #c6f6d5; color: #22543d; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+  .badge-pending { background: #feebc8; color: #744210; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+</style>
 </head>
 <body>
 
 <script>
 let currentUser = JSON.parse(localStorage.getItem("currentUser"));
 if (!currentUser) {
-  alert("يرجى تسجيل الدخول أولاً للمتابعة.");
   location.href = "login.html";
 }
+
+function openModal(id) { document.getElementById(id).style.display = "flex"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
 </script>
 
-<header class="top-nav">
-  <div class="user-profile">
-    <div class="user-avatar" id="userInitial">ط</div>
-    <div class="user-details">
-      <h3 id="welcomeMsg">مرحباً بك</h3>
-      <span class="role-tag" id="roleBadge">طالب</span>
-    </div>
+<!-- شريط التنقل العلوي -->
+<div class="nav-bar">
+  <div class="nav-brand">
+    <img src="logo (2).png" alt="شعار منصة TALALSAT" class="platform-logo">
+    <span style="font-weight: 700; color: var(--primary); font-size: 17px;" id="welcomeUser">مرحباً بك</span>
   </div>
-  <button onclick="logout()" class="logout-btn">تسجيل الخروج</button>
-</header>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <div id="accountStatusBadge">جاري التحقق...</div>
+    
+    <!-- زر لوحة الإدارة يظهر فقط إذا كان المستخدم مدير (admin) أو منظم (manager) -->
+    <div id="adminButtonContainer"></div>
 
-<div class="news-ticker">
-  <div class="news-label">📢 إعلان هام:</div>
-  <marquee id="newsTickerContent" direction="right" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();">
-    جاري تحميل الإعلانات...
-  </marquee>
+    <button onclick="logout()" class="btn-danger"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+  </div>
 </div>
 
-<!-- تخطيط الصفحة: القائمة على اليمين والمحتوى على اليسار -->
-<div class="main-layout">
-  
-  <!-- القائمة الجانبية (الدورات وتحتها الدروس) -->
-  <aside class="sidebar">
-    <h3>📚 الدورات والدروس</h3>
-    <div id="sidebarCourses">
-      <p style="color: var(--text-muted); font-size: 13px;">جاري تحميل القائمة...</p>
-    </div>
-  </aside>
+<!-- محتوى الصفحة: الدورات المتاحة -->
+<div style="background: var(--card-bg); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-soft); border: 1px solid var(--border-color);">
+  <h2 style="color: var(--primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-graduation-cap"></i> الدورات التدريبية المتاحة</h2>
+  <div id="studentCoursesContainer" class="courses-grid">جاري تحميل الدورات...</div>
+</div>
 
-  <!-- محتوى الدرس الحالي -->
-  <main class="content-area">
+<!-- ================= نافذة عرض دروس الدورة ================= -->
+<div id="modalCourseLessons" class="modal-overlay">
+  <div class="modal-box" style="max-width: 900px;">
+    <button class="close-modal" onclick="closeModal('modalCourseLessons')">&times;</button>
+    <h2 id="modalCourseTitle" style="color: var(--primary); margin-top:0;">محتوى الدورة</h2>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px;">
+      <div id="lessonsListContainer" style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); max-height: 400px; overflow-y: auto;">
+        <!-- قائمة الدروس -->
+      </div>
+      <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
+        <h4 id="activeLessonTitle" style="margin-top:0; color: #2d3748;">اختر درساً للمشاهدة</h4>
+        <div id="videoContainer" style="background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #fff;">
+          اختر درساً من القائمة الجانبية
+        </div>
+        <div id="lessonAttachmentsContainer" style="margin-top: 15px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= نافذة الدفع والاشتراك (PayPal) ================= -->
+<div id="modalPayment" class="modal-overlay">
+  <div class="modal-box" style="text-align: center; max-width: 500px;">
+    <button class="close-modal" onclick="closeModal('modalPayment')">&times;</button>
+    <i class="fa-solid fa-lock" style="font-size: 45px; color: var(--primary); margin-bottom: 15px;"></i>
+    <h2 style="color: var(--primary); margin-top:0;">الدورة مدفوعة</h2>
+    <p style="color: #718096; font-size: 14px; line-height: 1.6;">للوصول الكامل لهذه الدورة وجميع دروسها، يرجى إتمام عملية الدفع للاشتراك.</p>
     
-    <div id="activeLessonContainer">
-      <div class="lesson-card"><p class="state-message">اختر درساً من القائمة الجانبية للبدء...</p></div>
+    <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px solid var(--border-color);">
+      <b style="font-size: 16px; color: #2d3748;">سعر الدورة: <span id="paymentCoursePrice" style="color: var(--success);">$0</span></b>
+      <p style="color: #718096; font-size: 13px; margin: 5px 0 0 0;">بريد الدفع الإلكتروني (PayPal): <span id="paypalEmailDisplay" style="font-weight: bold; color: var(--primary);">غير محدد</span></p>
     </div>
 
-    <div class="support-card" id="supportSection">
-      <h3 id="contactTitle">تواصل مع المعلم 📩</h3>
-      <p id="contactDesc">هل لديك أي استفسار حول محتوى الدرس؟ اكتب سؤالك وسنجيبك في أسرع وقت:</p>
-      <textarea id="studentMsg" placeholder="اكتب سؤالك هنا بوضوح..."></textarea>
-      <div class="actions">
-        <button onclick="sendStudentQuestion()" class="btn-primary" id="sendBtnText">إرسال السؤال</button>
-        <button onclick="sendTestEmail()" class="btn-admin" id="adminTestBtn" style="display: none;">اختبار الإرسال</button>
-      </div>
+    <div style="margin-top: 20px;">
+      <a id="paypalPayLink" href="#" target="_blank" class="btn-primary" style="background: #0070ba; width: 100%; box-sizing: border-box; text-align: center;"><i class="fa-brands fa-paypal"></i> ادفع عبر PayPal الآن</a>
     </div>
-
-    <!-- قسم أيقونات التواصل الاجتماعي -->
-    <div class="social-footer" id="socialFooter">
-      <h3>تواصل معنا عبر المنصات التالية</h3>
-      <div class="social-icons-container" id="socialLinksBox">
-        <p style="color: #64748b; font-size: 13px;">جاري تحميل وسائل التواصل...</p>
-      </div>
-    </div>
-
-  </main>
-
+  </div>
 </div>
 
 <script type="module">
@@ -291,220 +209,150 @@ if (!currentUser) {
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  let allCoursesData = [];
+  document.getElementById("welcomeUser").innerText = `أهلاً بك، ${currentUser.name || 'طالب'}`;
+  let isPaidUser = currentUser.isPaid === true || currentUser.role === "admin" || currentUser.role === "manager";
+  
+  document.getElementById("accountStatusBadge").innerHTML = (currentUser.role === "admin" || currentUser.role === "manager") ?
+    '<span class="badge-active"><i class="fa-solid fa-user-shield"></i> حساب مشرف (صلاحيات كاملة)</span>' :
+    (isPaidUser ? '<span class="badge-active"><i class="fa-solid fa-circle-check"></i> حساب مفعل بالكامل</span>' : '<span class="badge-pending"><i class="fa-solid fa-clock"></i> حساب تجريبي (متاح فيديوهين)</span>');
 
-  if (currentUser && currentUser.name) {
-    document.getElementById("welcomeMsg").innerText = "أهلاً بك، " + currentUser.name;
-    document.getElementById("userInitial").innerText = currentUser.name.charAt(0);
-    
-    let userRole = currentUser.role || "student";
-    if (userRole === "admin" || userRole === "manager") {
-      document.getElementById("roleBadge").innerText = "مدير المنصة";
-      document.getElementById("adminTestBtn").style.display = "inline-block";
-      document.getElementById("contactTitle").innerText = "لوحة تحكم وإرسال تجريبي ⚙️";
-      document.getElementById("contactDesc").innerText = "أداة مخصصة لاختبار نظام البريد وتأكيد عمله:";
-      document.getElementById("sendBtnText").innerText = "إرسال تجريبي";
-    } else {
-      document.getElementById("roleBadge").innerText = "طالب";
-      document.getElementById("adminTestBtn").style.display = "none";
-    }
-  }
-
-  async function loadGeneralSettings() {
-    try {
-      const docSnap = await getDoc(doc(db, "settings", "general"));
-      if (docSnap.exists()) {
-        let data = docSnap.data();
-        if (data.newsTicker) {
-          document.getElementById("newsTickerContent").innerText = data.newsTicker;
-        }
-      }
-    } catch (e) {
-      console.log("خطأ في تحميل شريط الأخبار", e);
-    }
-  }
-
-  async function loadSocialLinks() {
-    let container = document.getElementById("socialLinksBox");
-    try {
-      const docRef = doc(db, "settings", "links");
-      const docSnap = await getDoc(docRef);
-      
-      let links = {
-        whatsapp: "#",
-        telegram: "#",
-        facebook: "#",
-        email: "#"
-      };
-
-      if (docSnap.exists()) {
-        let data = docSnap.data();
-        if(data.whatsapp) links.whatsapp = data.whatsapp;
-        if(data.telegram) links.telegram = data.telegram;
-        if(data.facebook) links.facebook = data.facebook;
-        if(data.email) links.email = data.email;
-      }
-
-      container.innerHTML = `
-        <a href="${links.whatsapp}" target="_blank" class="social-btn whatsapp-bg" title="تواصل عبر الواتساب"><i class="fab fa-whatsapp"></i></a>
-        <a href="${links.telegram}" target="_blank" class="social-btn telegram-bg" title="قناتنا على تيليجرام"><i class="fab fa-telegram-plane"></i></a>
-        <a href="${links.facebook}" target="_blank" class="social-btn facebook-bg" title="صفحتنا على فيسبوك"><i class="fab fa-facebook-f"></i></a>
-        <a href="${links.email}" class="social-btn email-bg" title="راسلنا عبر البريد"><i class="fas fa-envelope"></i></a>
-      `;
-    } catch (e) {
-      container.innerHTML = `
-        <a href="#" class="social-btn whatsapp-bg"><i class="fab fa-whatsapp"></i></a>
-        <a href="#" class="social-btn telegram-bg"><i class="fab fa-telegram-plane"></i></a>
-        <a href="#" class="social-btn facebook-bg"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="social-btn email-bg"><i class="fas fa-envelope"></i></a>
-      `;
-    }
-  }
-
-  async function loadCoursesStructure() {
-    let sidebarContainer = document.getElementById("sidebarCourses");
-    try {
-      const querySnapshot = await getDocs(collection(db, "courses"));
-      allCoursesData = [];
-      
-      querySnapshot.forEach((docSnap) => {
-        let data = docSnap.data();
-        if (!data.title || data.title === "مرحباً" || !data.video) return;
-        allCoursesData.push({ id: docSnap.id, ...data });
-      });
-
-      if (allCoursesData.length === 0) {
-        sidebarContainer.innerHTML = "<p style='color:var(--text-muted); font-size:13px;'>لا توجد دروس متاحة حالياً.</p>";
-        document.getElementById("activeLessonContainer").innerHTML = "<div class='lesson-card'><p>لا توجد دروس لعرضها.</p></div>";
-        return;
-      }
-
-      let grouped = {};
-      allCoursesData.forEach(item => {
-        let cName = item.courseName ? item.courseName : "الدورة العامة";
-        if (!grouped[cName]) grouped[cName] = [];
-        grouped[cName].push(item);
-      });
-
-      let sidebarHtml = "";
-      for (let courseName in grouped) {
-        sidebarHtml += `
-          <div class="course-group">
-            <div class="course-title-btn">📁 ${courseName}</div>
-            <ul class="lesson-list-side">
-        `;
-        grouped[courseName].forEach(lesson => {
-          sidebarHtml += `
-            <li>
-              <button class="lesson-item-btn" id="btn-${lesson.id}" onclick="selectLesson('${lesson.id}')">
-                ▶ ${lesson.title}
-              </button>
-            </li>
-          `;
-        });
-        sidebarHtml += `
-            </ul>
-          </div>
-        `;
-      }
-
-      sidebarContainer.innerHTML = sidebarHtml;
-
-      if (allCoursesData.length > 0) {
-        selectLesson(allCoursesData[0].id);
-      }
-
-    } catch (e) {
-      sidebarContainer.innerHTML = "<p style='color:var(--danger); font-size:13px;'>خطأ في تحميل القائمة.</p>";
-    }
-  }
-
-  window.selectLesson = function(lessonId) {
-    let lesson = allCoursesData.find(item => item.id === lessonId);
-    if (!lesson) return;
-
-    document.querySelectorAll('.lesson-item-btn').forEach(btn => btn.classList.remove('active-lesson'));
-    let activeBtn = document.getElementById(`btn-${lessonId}`);
-    if (activeBtn) activeBtn.classList.add('active-lesson');
-
-    let embedUrl = getEmbedUrl(lesson.video);
-    let videoContent = embedUrl 
-      ? `<div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>`
-      : `<div class="external-link-box">
-           <p>هذا الدرس متوفر عبر رابط خارجي (لا يمكن تشغيله داخل المنصة مباشرة).</p>
-           <a href="${lesson.video}" target="_blank" class="btn-primary" style="display:inline-block; text-decoration:none;">مشاهدة الدرس الآن 🔗</a>
-         </div>`;
-
-    let cName = lesson.courseName ? lesson.courseName : "الدورة التأسيسية الشاملة";
-
-    // تفعيل أو إلغاء أزرار المرفقات والاختبار بناءً على إدخال الأدمن
-    let quizBtnHtml = lesson.quizLink 
-      ? `<a href="${lesson.quizLink}" target="_blank" class="action-btn quiz-btn" style="text-decoration:none;">📝 اختبار الدرس</a>`
-      : `<button class="action-btn quiz-btn disabled-btn" disabled>📝 اختبار الدرس (غير متوفر)</button>`;
-
-    let resourceBtnHtml = lesson.resourceFile 
-      ? `<a href="${lesson.resourceFile}" target="_blank" class="action-btn resource-btn" style="text-decoration:none;">📚 مصادر ومرفقات</a>`
-      : `<button class="action-btn resource-btn disabled-btn" disabled>📚 مصادر ومرفقات (غير متوفرة)</button>`;
-
-    let container = document.getElementById("activeLessonContainer");
-    container.innerHTML = `
-      <div class="lesson-card">
-        <div class="lesson-meta">
-          <span class="course-name">📘 ${cName}</span>
-          <span class="lesson-number">درس تفاعلي</span>
-        </div>
-        <div class="lesson-title-area">
-          <h2>${lesson.title}</h2>
-        </div>
-        ${videoContent}
-        <div class="lesson-actions">
-          ${quizBtnHtml}
-          ${resourceBtnHtml}
-          <button class="action-btn ask-btn" onclick="document.getElementById('studentMsg').focus(); document.getElementById('supportSection').scrollIntoView({behavior: 'smooth', block: 'center'});">❓ استفسار عن الدرس</button>
-        </div>
-      </div>
+  // إظهار زر لوحة الإدارة إذا كان المستخدم مشرفاً أو منظماً
+  if (currentUser.role === "admin" || currentUser.role === "manager") {
+    document.getElementById("adminButtonContainer").innerHTML = `
+      <a href="admin.html" class="btn-admin"><i class="fa-solid fa-gear"></i> لوحة الإدارة</a>
     `;
   }
 
-  loadGeneralSettings();
-  loadCoursesStructure();
-  loadSocialLinks();
+  async function loadStudentData() {
+    try {
+      const paySnap = await getDoc(doc(db, "settings", "payment"));
+      if (paySnap.exists()) {
+        let paypalEmail = paySnap.data().paypalEmail || "";
+        document.getElementById("paypalEmailDisplay").innerText = paypalEmail || "الدعم الفني";
+        document.getElementById("paypalPayLink").href = paypalEmail ? `https://www.paypal.com/paypalme/${paypalEmail}` : "#";
+      }
+
+      const coursesSnap = await getDocs(collection(db, "coursesList"));
+      const lessonsSnap = await getDocs(collection(db, "lessons"));
+
+      let lessonsByCourse = {};
+      lessonsSnap.forEach((docSnap) => {
+        let lesson = docSnap.data();
+        if (!lessonsByCourse[lesson.courseId]) lessonsByCourse[lesson.courseId] = [];
+        lessonsByCourse[lesson.courseId].push(lesson);
+      });
+
+      let gridHtml = "";
+      coursesSnap.forEach((docSnap) => {
+        let course = docSnap.data();
+        let courseId = docSnap.id;
+        
+        // المدير يرى كل الدورات، بينما الطالب يرى المنشورة فقط
+        if (course.isPublished !== true && currentUser.role !== "admin" && currentUser.role !== "manager") return;
+
+        let courseLessons = lessonsByCourse[courseId] || [];
+        let price = course.price || 0;
+
+        gridHtml += `
+          <div class="course-box">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: var(--primary); font-size: 18px;">📚 ${course.name}</h3>
+                <span style="background: #edf2f7; padding: 3px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">$${price}</span>
+              </div>
+              <p style="color: #718096; font-size: 13.5px; line-height: 1.5; margin: 0 0 15px 0;">${course.description || 'لا يوجد وصف مضاف.'}</p>
+            </div>
+            <button class="btn-primary" onclick="openCourse('${courseId}', '${course.name}', ${price}, ${isPaidUser})" style="width: 100%;">
+              <i class="fa-solid fa-play-circle"></i> دخول ودراسة الدورة (${courseLessons.length} دروس)
+            </button>
+          </div>
+        `;
+      });
+
+      document.getElementById("studentCoursesContainer").innerHTML = gridHtml || "<p style='color:#718096; grid-column: 1/-1; text-align: center;'>لا توجد دورات منشورة حالياً.</p>";
+
+    } catch (e) {
+      document.getElementById("studentCoursesContainer").innerHTML = "<p style='color:red;'>خطأ في تحميل الدورات.</p>";
+    }
+  }
+
+  window.openCourse = async function(courseId, courseName, price, isPaid) {
+    if (!isPaid && price > 0) {
+      document.getElementById("paymentCoursePrice").innerText = "$" + price;
+      openModal('modalPayment');
+      return;
+    }
+
+    document.getElementById("modalCourseTitle").innerText = "دورة: " + courseName;
+    let container = document.getElementById("lessonsListContainer");
+    
+    try {
+      const lessonsSnap = await getDocs(collection(db, "lessons"));
+      let html = "<h4 style='margin-top:0; color:#4a5568;'>قائمة الدروس:</h4>";
+      let firstLesson = null;
+      let index = 0;
+
+      lessonsSnap.forEach((docSnap) => {
+        let lesson = docSnap.data();
+        if (lesson.courseId === courseId) {
+          index++;
+          if (index === 1) firstLesson = lesson;
+          
+          let isLocked = (!isPaid && index > 2);
+          
+          html += `
+            <div onclick="${isLocked ? `alert('هذا الدرس مدفوع ويتطلب تفعيل الحساب.');` : `playLesson('${encodeURIComponent(lesson.title)}', '${encodeURIComponent(lesson.video)}', '${encodeURIComponent(lesson.fileData || '')}', '${encodeURIComponent(lesson.fileName || '')}')`}" 
+                 style="background: #fff; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+              <span>الدرس ${index}: ${lesson.title}</span>
+              ${isLocked ? '<i class="fa-solid fa-lock" style="color:var(--danger);"></i>' : '<i class="fa-solid fa-play" style="color:var(--primary);"></i>'}
+            </div>
+          `;
+        }
+      });
+
+      container.innerHTML = html || "<p style='color:#718096;'>لا توجد دروس مضافة لهذه الدورة.</p>";
+
+      if (firstLesson) {
+        window.playLesson(encodeURIComponent(firstLesson.title), encodeURIComponent(firstLesson.video), encodeURIComponent(firstLesson.fileData || ''), encodeURIComponent(firstLesson.fileName || ''));
+      }
+
+      openModal('modalCourseLessons');
+    } catch (e) {
+      alert("خطأ في تحميل دروس الدورة.");
+    }
+  };
+
+  window.playLesson = function(title, videoUrl, fileData, fileName) {
+    document.getElementById("activeLessonTitle").innerText = decodeURIComponent(title);
+    
+    let embedUrl = decodeURIComponent(videoUrl);
+    if (embedUrl.includes("watch?v=")) {
+      embedUrl = embedUrl.replace("watch?v=", "embed/");
+    } else if (embedUrl.includes("youtu.be/")) {
+      let code = embedUrl.split("youtu.be/")[1];
+      embedUrl = `https://www.youtube.com/embed/${code}`;
+    }
+
+    document.getElementById("videoContainer").innerHTML = `
+      <iframe src="${embedUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>
+    `;
+
+    let attachDiv = document.getElementById("lessonAttachmentsContainer");
+    if (fileData && fileData !== "") {
+      attachDiv.innerHTML = `
+        <a href="${decodeURIComponent(fileData)}" download="${decodeURIComponent(fileName)}" class="btn-primary" style="font-size:13px; padding: 8px 14px;"><i class="fa-solid fa-download"></i> تحميل مرفقات الدرس (${decodeURIComponent(fileName)})</a>
+      `;
+    } else {
+      attachDiv.innerHTML = "";
+    }
+  };
+
+  loadStudentData();
 
   window.logout = function() {
     localStorage.removeItem("currentUser");
     location.href = "login.html";
   }
-
-  function getEmbedUrl(url) {
-    if (!url) return null;
-    let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-    return (match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null);
-  }
-
-  function sendEmailNotification(subject, messageText) {
-    var templateParams = {
-        from_name: currentUser ? currentUser.name : 'طالب',
-        message: messageText
-    };
-    return emailjs.send('service_oq1o551', 'template_my0rh1i', templateParams);
-  }
-
-  window.sendStudentQuestion = function() {
-    let msgInput = document.getElementById("studentMsg");
-    let msg = msgInput.value.trim();
-    if (!msg) { alert("يرجى كتابة الرسالة أولاً"); return; }
-    
-    sendEmailNotification("استفسار طالب", msg)
-      .then(() => { alert("تم إرسال سؤالك بنجاح!"); msgInput.value = ""; })
-      .catch((err) => { alert("حدث خطأ أثناء الإرسال."); console.log(err); });
-  }
-
-  window.sendTestEmail = function() {
-    sendEmailNotification("تجربة إرسال", "هذه رسالة اختبارية من منصة TALALSAT")
-      .then(() => alert("وصلت الرسالة بنجاح!"))
-      .catch((err) => alert("فشل الإرسال: " + JSON.stringify(err)));
-  }
 </script>
-
 </body>
 </html>
