@@ -4,38 +4,203 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الدروس - منصة TALALSAT</title>
+<!-- مكتبة الأيقونات FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --primary: #2b6cb0;
-    --accent: #319795;
-    --danger: #e53e3e;
-    --bg-color: #f7fafc;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-main: #eef2f6; 
     --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
     --border-color: #e2e8f0;
+    --danger: #ef4444;
   }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background: var(--bg-color); max-width: 950px; margin: auto; color: #2d3748; }
-  
-  .header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 18px 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 25px; border: 1px solid var(--border-color); }
-  .welcome-text { font-weight: 600; color: var(--primary); font-size: 16px; }
-  .btn-logout { background: #fff; color: var(--danger); border: 1px solid var(--danger); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
-  .btn-logout:hover { background: var(--danger); color: #fff; }
 
-  .container { display: flex; flex-direction: column; gap: 20px; }
-  .course-card { background: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-right: 4px solid var(--primary); }
-  .course-card h3 { margin-top: 0; color: #1a202c; font-size: 18px; }
-  
-  .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; margin-top: 15px; background: #1a202c; border-radius: 8px; overflow: hidden; }
-  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+  }
 
-  .contact-box { background: var(--card-bg); padding: 25px; border-radius: 10px; margin-top: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
-  .btn-send { background: var(--accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-  .btn-send:hover { background: #2c7a7b; }
-  .btn-test { background: #4299e1; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-right: 10px; }
-  .btn-test:hover { background: #3182ce; }
-  textarea { width: 100%; height: 90px; margin: 12px 0; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #f8fafc; }
-  textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+  /* الشريط العلوي */
+  .top-nav { background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border-bottom: 1px solid var(--border-color); }
+  .user-profile { display: flex; align-items: center; gap: 14px; }
+  .user-avatar { width: 45px; height: 45px; background: #e0e7ff; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+  .user-details h3 { margin: 0 0 2px 0; font-size: 16px; color: var(--text-main); }
+  .role-tag { display: inline-block; background: #f1f5f9; color: var(--text-muted); font-size: 12px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .logout-btn { background: #fee2e2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; }
+  .logout-btn:hover { background: #fecaca; }
+
+  /* شريط الأخبار */
+  .news-ticker { background: #1e293b; color: #f8fafc; display: flex; align-items: center; padding: 10px 32px; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .news-label { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-left: 12px; white-space: nowrap; }
+  .news-ticker marquee { font-weight: 500; letter-spacing: 0.5px; }
+
+  /* تخطيط الصفحة الرئيسي (أعمدة) */
+  .main-layout {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 850px) {
+    .main-layout { grid-template-columns: 1fr; }
+  }
+
+  /* القائمة الجانبية للدورات والدروس */
+  .sidebar {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    position: sticky;
+    top: 20px;
+  }
+  .sidebar h3 {
+    margin-top: 0;
+    font-size: 17px;
+    color: var(--text-main);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .course-group {
+    margin-bottom: 16px;
+  }
+  .course-title-btn {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lesson-list-side {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+  }
+  .lesson-item-btn {
+    padding: 10px 14px;
+    margin: 4px 0;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--text-main);
+    width: 100%;
+    text-align: right;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .lesson-item-btn:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: var(--primary);
+  }
+  .lesson-item-btn.active-lesson {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  /* الحاوية اليسرى للمحتوى */
+  .content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* بطاقة الدرس */
+  .lesson-card { background: var(--card-bg); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); }
+  .lesson-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+  .course-name { color: var(--primary); font-weight: bold; font-size: 15px; }
+  .lesson-number { background: #f1f5f9; color: var(--text-muted); padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+  .lesson-title-area h2 { margin: 0 0 20px 0; font-size: 22px; color: var(--text-main); }
+  .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background: #000000; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+  .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .external-link-box { background: #f1f5f9; padding: 30px; text-align: center; border-radius: 12px; border: 1px dashed #cbd5e1; }
+  .external-link-box p { color: var(--text-muted); margin-top: 0; margin-bottom: 16px; font-size: 15px; }
+
+  /* أزرار ملحقات الدرس */
+  .lesson-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  .action-btn { flex: 1; min-width: 130px; padding: 12px; border-radius: 8px; border: 1px solid; cursor: pointer; font-weight: bold; font-size: 14px; text-align: center; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .quiz-btn { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
+  .quiz-btn:hover { background: #d1fae5; }
+  .resource-btn { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+  .resource-btn:hover { background: #dbeafe; }
+  .ask-btn { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+  .ask-btn:hover { background: #fef3c7; }
+  .disabled-btn { opacity: 0.5; cursor: not-allowed !important; background: #f1f5f9 !important; color: #94a3b8 !important; border-color: #e2e8f0 !important; }
+
+  /* صندوق التواصل */
+  .support-card { background: var(--card-bg); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); }
+  .support-card h3 { margin-top: 0; color: var(--text-main); font-size: 18px; }
+  .support-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
+  textarea { width: 100%; height: 110px; padding: 14px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: #ffffff; resize: vertical; transition: all 0.2s; }
+  textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+  .actions { display: flex; gap: 12px; margin-top: 16px; }
+  .btn-primary, .btn-admin { color: white; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s; }
+  .btn-primary { background: var(--primary); }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-admin { background: #0ea5e9; }
+  .btn-admin:hover { background: #0284c7; }
+
+  /* تصميم أيقونات التواصل الاجتماعي */
+  .social-footer {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  }
+  .social-footer h3 {
+    margin-top: 0;
+    color: var(--text-main);
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  .social-icons-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .social-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .social-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  }
+  .whatsapp-bg { background: #25D366; }
+  .telegram-bg { background: #0088cc; }
+  .facebook-bg { background: #1877F2; }
+  .email-bg { background: #EA4335; }
 </style>
 
+<!-- EmailJS SDK -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script type="text/javascript">
    (function(){ emailjs.init("kaJmN11jIcapGxZSh"); })();
@@ -51,28 +216,67 @@ if (!currentUser) {
 }
 </script>
 
-<div class="header">
-  <div class="welcome-text" id="welcomeMsg">مرحباً بك</div>
-  <button onclick="logout()" class="btn-logout">تسجيل الخروج</button>
-</div>
-
-<div class="container" id="coursesContainer">
-  <p style="text-align:center; color:#718096;">جاري تحميل الدروس من المنصة...</p>
-</div>
-
-<div class="contact-box">
-  <h3 style="color: var(--primary); margin-top:0;">تواصل مع المعلم 📩</h3>
-  <p style="color: #718096; font-size: 14px;">لديك سؤال أو استفسار حول الدروس؟ أرسله مباشرة إلى المعلم:</p>
-  <textarea id="studentMsg" placeholder="اكتب سؤالك هنا..."></textarea>
-  <div>
-    <button onclick="sendStudentQuestion()" class="btn-send">إرسال السؤال</button>
-    <button onclick="sendTestEmail()" class="btn-test">اختبار الإرسال</button>
+<header class="top-nav">
+  <div class="user-profile">
+    <div class="user-avatar" id="userInitial">ط</div>
+    <div class="user-details">
+      <h3 id="welcomeMsg">مرحباً بك</h3>
+      <span class="role-tag" id="roleBadge">طالب</span>
+    </div>
   </div>
+  <button onclick="logout()" class="logout-btn">تسجيل الخروج</button>
+</header>
+
+<div class="news-ticker">
+  <div class="news-label">📢 إعلان هام:</div>
+  <marquee id="newsTickerContent" direction="right" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();">
+    جاري تحميل الإعلانات...
+  </marquee>
+</div>
+
+<!-- تخطيط الصفحة: القائمة على اليمين والمحتوى على اليسار -->
+<div class="main-layout">
+  
+  <!-- القائمة الجانبية (الدورات وتحتها الدروس) -->
+  <aside class="sidebar">
+    <h3>📚 الدورات والدروس</h3>
+    <div id="sidebarCourses">
+      <p style="color: var(--text-muted); font-size: 13px;">جاري تحميل القائمة...</p>
+    </div>
+  </aside>
+
+  <!-- محتوى الدرس الحالي -->
+  <main class="content-area">
+    
+    <div id="activeLessonContainer">
+      <div class="lesson-card"><p class="state-message">اختر درساً من القائمة الجانبية للبدء...</p></div>
+    </div>
+
+    <div class="support-card" id="supportSection">
+      <h3 id="contactTitle">تواصل مع المعلم 📩</h3>
+      <p id="contactDesc">هل لديك أي استفسار حول محتوى الدرس؟ اكتب سؤالك وسنجيبك في أسرع وقت:</p>
+      <textarea id="studentMsg" placeholder="اكتب سؤالك هنا بوضوح..."></textarea>
+      <div class="actions">
+        <button onclick="sendStudentQuestion()" class="btn-primary" id="sendBtnText">إرسال السؤال</button>
+        <button onclick="sendTestEmail()" class="btn-admin" id="adminTestBtn" style="display: none;">اختبار الإرسال</button>
+      </div>
+    </div>
+
+    <!-- قسم أيقونات التواصل الاجتماعي -->
+    <div class="social-footer" id="socialFooter">
+      <h3>تواصل معنا عبر المنصات التالية</h3>
+      <div class="social-icons-container" id="socialLinksBox">
+        <p style="color: #64748b; font-size: 13px;">جاري تحميل وسائل التواصل...</p>
+      </div>
+    </div>
+
+  </main>
+
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCvAPQ8w0anK6CkmLJuHjNMSlSf4trf0cU",
@@ -87,45 +291,184 @@ if (!currentUser) {
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  let allCoursesData = [];
+
   if (currentUser && currentUser.name) {
-    document.getElementById("welcomeMsg").innerText = "أهلاً بك، " + currentUser.name + " 📚 (TALALSAT)";
-  }
-
-  async function loadCourses() {
-    let container = document.getElementById("coursesContainer");
-    try {
-      const querySnapshot = await getDocs(collection(db, "courses"));
-      let html = "";
-      let i = 0;
-
-      querySnapshot.forEach((docSnap) => {
-        let course = docSnap.data();
-        // نتجاوز المستند التجريبي الفارغ إن وجد
-        if (!course.title || course.title === "مرحباً" || !course.video) return;
-        
-        i++;
-        let embedUrl = getEmbedUrl(course.video);
-        html += `
-          <div class="course-card">
-            <h3>درس ${i}: ${course.title}</h3>
-            ${embedUrl ? `
-              <div class="video-container">
-                <iframe src="${embedUrl}" allowfullscreen></iframe>
-              </div>
-            ` : `
-              <p><a href="${course.video}" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: none;">رابط المشاهدة الخارجي للدرس</a></p>
-            `}
-          </div>
-        `;
-      });
-
-      container.innerHTML = html || "<div class='course-card'><p style='text-align:center; color:#718096; margin:0;'>لا توجد دروس متاحة حالياً.</p></div>";
-    } catch (e) {
-      container.innerHTML = "<div class='course-card'><p style='text-align:center; color:red;'>خطأ في تحميل الدروس من قاعدة البيانات.</p></div>";
+    document.getElementById("welcomeMsg").innerText = "أهلاً بك، " + currentUser.name;
+    document.getElementById("userInitial").innerText = currentUser.name.charAt(0);
+    
+    let userRole = currentUser.role || "student";
+    if (userRole === "admin" || userRole === "manager") {
+      document.getElementById("roleBadge").innerText = "مدير المنصة";
+      document.getElementById("adminTestBtn").style.display = "inline-block";
+      document.getElementById("contactTitle").innerText = "لوحة تحكم وإرسال تجريبي ⚙️";
+      document.getElementById("contactDesc").innerText = "أداة مخصصة لاختبار نظام البريد وتأكيد عمله:";
+      document.getElementById("sendBtnText").innerText = "إرسال تجريبي";
+    } else {
+      document.getElementById("roleBadge").innerText = "طالب";
+      document.getElementById("adminTestBtn").style.display = "none";
     }
   }
 
-  loadCourses();
+  async function loadGeneralSettings() {
+    try {
+      const docSnap = await getDoc(doc(db, "settings", "general"));
+      if (docSnap.exists()) {
+        let data = docSnap.data();
+        if (data.newsTicker) {
+          document.getElementById("newsTickerContent").innerText = data.newsTicker;
+        }
+      }
+    } catch (e) {
+      console.log("خطأ في تحميل شريط الأخبار", e);
+    }
+  }
+
+  async function loadSocialLinks() {
+    let container = document.getElementById("socialLinksBox");
+    try {
+      const docRef = doc(db, "settings", "links");
+      const docSnap = await getDoc(docRef);
+      
+      let links = {
+        whatsapp: "#",
+        telegram: "#",
+        facebook: "#",
+        email: "#"
+      };
+
+      if (docSnap.exists()) {
+        let data = docSnap.data();
+        if(data.whatsapp) links.whatsapp = data.whatsapp;
+        if(data.telegram) links.telegram = data.telegram;
+        if(data.facebook) links.facebook = data.facebook;
+        if(data.email) links.email = data.email;
+      }
+
+      container.innerHTML = `
+        <a href="${links.whatsapp}" target="_blank" class="social-btn whatsapp-bg" title="تواصل عبر الواتساب"><i class="fab fa-whatsapp"></i></a>
+        <a href="${links.telegram}" target="_blank" class="social-btn telegram-bg" title="قناتنا على تيليجرام"><i class="fab fa-telegram-plane"></i></a>
+        <a href="${links.facebook}" target="_blank" class="social-btn facebook-bg" title="صفحتنا على فيسبوك"><i class="fab fa-facebook-f"></i></a>
+        <a href="${links.email}" class="social-btn email-bg" title="راسلنا عبر البريد"><i class="fas fa-envelope"></i></a>
+      `;
+    } catch (e) {
+      container.innerHTML = `
+        <a href="#" class="social-btn whatsapp-bg"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="social-btn telegram-bg"><i class="fab fa-telegram-plane"></i></a>
+        <a href="#" class="social-btn facebook-bg"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-btn email-bg"><i class="fas fa-envelope"></i></a>
+      `;
+    }
+  }
+
+  async function loadCoursesStructure() {
+    let sidebarContainer = document.getElementById("sidebarCourses");
+    try {
+      const querySnapshot = await getDocs(collection(db, "courses"));
+      allCoursesData = [];
+      
+      querySnapshot.forEach((docSnap) => {
+        let data = docSnap.data();
+        if (!data.title || data.title === "مرحباً" || !data.video) return;
+        allCoursesData.push({ id: docSnap.id, ...data });
+      });
+
+      if (allCoursesData.length === 0) {
+        sidebarContainer.innerHTML = "<p style='color:var(--text-muted); font-size:13px;'>لا توجد دروس متاحة حالياً.</p>";
+        document.getElementById("activeLessonContainer").innerHTML = "<div class='lesson-card'><p>لا توجد دروس لعرضها.</p></div>";
+        return;
+      }
+
+      let grouped = {};
+      allCoursesData.forEach(item => {
+        let cName = item.courseName ? item.courseName : "الدورة العامة";
+        if (!grouped[cName]) grouped[cName] = [];
+        grouped[cName].push(item);
+      });
+
+      let sidebarHtml = "";
+      for (let courseName in grouped) {
+        sidebarHtml += `
+          <div class="course-group">
+            <div class="course-title-btn">📁 ${courseName}</div>
+            <ul class="lesson-list-side">
+        `;
+        grouped[courseName].forEach(lesson => {
+          sidebarHtml += `
+            <li>
+              <button class="lesson-item-btn" id="btn-${lesson.id}" onclick="selectLesson('${lesson.id}')">
+                ▶ ${lesson.title}
+              </button>
+            </li>
+          `;
+        });
+        sidebarHtml += `
+            </ul>
+          </div>
+        `;
+      }
+
+      sidebarContainer.innerHTML = sidebarHtml;
+
+      if (allCoursesData.length > 0) {
+        selectLesson(allCoursesData[0].id);
+      }
+
+    } catch (e) {
+      sidebarContainer.innerHTML = "<p style='color:var(--danger); font-size:13px;'>خطأ في تحميل القائمة.</p>";
+    }
+  }
+
+  window.selectLesson = function(lessonId) {
+    let lesson = allCoursesData.find(item => item.id === lessonId);
+    if (!lesson) return;
+
+    document.querySelectorAll('.lesson-item-btn').forEach(btn => btn.classList.remove('active-lesson'));
+    let activeBtn = document.getElementById(`btn-${lessonId}`);
+    if (activeBtn) activeBtn.classList.add('active-lesson');
+
+    let embedUrl = getEmbedUrl(lesson.video);
+    let videoContent = embedUrl 
+      ? `<div class="video-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>`
+      : `<div class="external-link-box">
+           <p>هذا الدرس متوفر عبر رابط خارجي (لا يمكن تشغيله داخل المنصة مباشرة).</p>
+           <a href="${lesson.video}" target="_blank" class="btn-primary" style="display:inline-block; text-decoration:none;">مشاهدة الدرس الآن 🔗</a>
+         </div>`;
+
+    let cName = lesson.courseName ? lesson.courseName : "الدورة التأسيسية الشاملة";
+
+    // تفعيل أو إلغاء أزرار المرفقات والاختبار بناءً على إدخال الأدمن
+    let quizBtnHtml = lesson.quizLink 
+      ? `<a href="${lesson.quizLink}" target="_blank" class="action-btn quiz-btn" style="text-decoration:none;">📝 اختبار الدرس</a>`
+      : `<button class="action-btn quiz-btn disabled-btn" disabled>📝 اختبار الدرس (غير متوفر)</button>`;
+
+    let resourceBtnHtml = lesson.resourceFile 
+      ? `<a href="${lesson.resourceFile}" target="_blank" class="action-btn resource-btn" style="text-decoration:none;">📚 مصادر ومرفقات</a>`
+      : `<button class="action-btn resource-btn disabled-btn" disabled>📚 مصادر ومرفقات (غير متوفرة)</button>`;
+
+    let container = document.getElementById("activeLessonContainer");
+    container.innerHTML = `
+      <div class="lesson-card">
+        <div class="lesson-meta">
+          <span class="course-name">📘 ${cName}</span>
+          <span class="lesson-number">درس تفاعلي</span>
+        </div>
+        <div class="lesson-title-area">
+          <h2>${lesson.title}</h2>
+        </div>
+        ${videoContent}
+        <div class="lesson-actions">
+          ${quizBtnHtml}
+          ${resourceBtnHtml}
+          <button class="action-btn ask-btn" onclick="document.getElementById('studentMsg').focus(); document.getElementById('supportSection').scrollIntoView({behavior: 'smooth', block: 'center'});">❓ استفسار عن الدرس</button>
+        </div>
+      </div>
+    `;
+  }
+
+  loadGeneralSettings();
+  loadCoursesStructure();
+  loadSocialLinks();
 
   window.logout = function() {
     localStorage.removeItem("currentUser");
@@ -162,5 +505,6 @@ if (!currentUser) {
       .catch((err) => alert("فشل الإرسال: " + JSON.stringify(err)));
   }
 </script>
+
 </body>
 </html>
