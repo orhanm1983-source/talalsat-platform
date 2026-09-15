@@ -7,43 +7,88 @@
 <style>
   :root {
     --primary: #2b6cb0;
-    --bg-color: #f7fafc;
+    --primary-hover: #1a4975;
+    --bg-color: #f4f7f6;
     --card-bg: #ffffff;
     --text-color: #2d3748;
     --border-color: #e2e8f0;
   }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
-  .card { background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); width: 400px; text-align: center; border: 1px solid var(--border-color); }
-  .logo-container { margin-bottom: 25px; }
-  .platform-logo { width: 220px; max-width: 100%; height: auto; }
-  h2 { color: var(--primary); margin-bottom: 15px; }
-  p { font-size: 15px; color: #4a5568; line-height: 1.6; }
-  .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: var(--bg-color); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    margin: 0; 
+    color: var(--text-color); 
+  }
+  .card { 
+    background: var(--card-bg); 
+    padding: 36px; 
+    border-radius: 16px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06); 
+    width: 400px; 
+    border: 1px solid var(--border-color); 
+    text-align: center;
+  }
+  h2 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  input { 
+    width: 100%; 
+    padding: 13px 15px; 
+    margin: 15px 0; 
+    border: 1px solid var(--border-color); 
+    border-radius: 10px; 
+    box-sizing: border-box; 
+    font-size: 20px; 
+    text-align: center;
+    letter-spacing: 5px;
+    background: #f8fafc; 
+    transition: all 0.2s;
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.12);
+  }
+  button { 
+    width: 100%; 
+    padding: 12px; 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    font-size: 15px; 
+    font-weight: 700; 
+    transition: background 0.2s;
+  }
+  button:hover { background: var(--primary-hover); }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="logo-container">
-    <img src="logo.png" alt="شعار منصة TALALSAT" class="platform-logo">
-  </div>
+  <h2>تفعيل الحساب</h2>
+  <p>الرجاء إدخال رمز التحقق (6 أرقام) الذي تم إرساله إلى بريدك الإلكتروني</p>
   
-  <div id="loadingState">
-    <h2>جاري تفعيل الحساب...</h2>
-    <div class="spinner"></div>
-    <p>يرجى الانتظار قليلاً بينما نتحقق من بريدك الإلكتروني ونفعل حسابك في المنصة.</p>
-  </div>
-
-  <div id="messageState" style="display:none;">
-    <h2 id="statusTitle">تم التفعيل بنجاح!</h2>
-    <p id="statusText">جاري تحويلك إلى المنصة...</p>
-  </div>
+  <input id="verificationCodeInput" type="text" placeholder="123456" maxlength="6">
+  <button type="button" onclick="verifyAccount()">تفعيل الحساب</button>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCvAPQ8w0anK6CkmLJuHjNMSlSf4trf0cU",
@@ -58,12 +103,21 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function verifyAccount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get('email');
+  // استخراج البريد الإلكتروني المرسل عبر الرابط
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email');
+
+  window.verifyAccount = async function() {
+    let enteredCode = document.getElementById("verificationCodeInput").value.trim();
+
+    if (!enteredCode) {
+      alert("يرجى إدخال رمز التفعيل");
+      return;
+    }
 
     if (!email) {
-      showError("رابط التفعيل غير صالح أو مفقود.");
+      alert("رابط التحقق غير صالح، يرجى إعادة تسجيل الدخول.");
+      window.location.href = "login.html";
       return;
     }
 
@@ -71,44 +125,30 @@
       const q = query(collection(db, "users"), where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.empty) {
-        showError("لم يتم العثور على حساب مرتبط بهذا البريد الإلكتروني.");
-        return;
+      if (!querySnapshot.empty) {
+        let userDocRef = querySnapshot.docs[0].ref;
+        let userData = querySnapshot.docs[0].data();
+
+        // مطابقة الكود المدخل مع المخزن في قاعدة البيانات
+        if (userData.code === enteredCode) {
+          await updateDoc(userDocRef, {
+            status: "active",
+            code: "" // مسح الرمز بعد استخدامه بنجاح
+          });
+
+          alert("تم تفعيل حسابك بنجاح! يمكنك الآن تسجيل الدخول.");
+          window.location.href = "login.html";
+        } else {
+          alert("رمز التفعيل غير صحيح، يرجى المحاولة مرة أخرى.");
+        }
+      } else {
+        alert("لم يتم العثور على الحساب المرتبط بهذا البريد.");
       }
-
-      const userDocRef = doc(db, "users", querySnapshot.docs[0].id);
-      let userData = querySnapshot.docs[0].data();
-
-      // تحديث حالة الحساب إلى active (مفعل)
-      await updateDoc(userDocRef, { status: "active" });
-      userData.status = "active";
-
-      // تسجيل دخول الطالب مباشرة وتوجيهه للمنصة
-      localStorage.setItem("currentUser", JSON.stringify(userData));
-
-      document.getElementById("loadingState").style.display = "none";
-      document.getElementById("messageState").style.display = "block";
-      document.getElementById("statusTitle").innerText = "تم تفعيل حسابك بنجاح! 🎉";
-      document.getElementById("statusText").innerText = "أهلاً بك في منصة TALALSAT. جاري تحويلك للصفحة الرئيسية...";
-
-      setTimeout(() => {
-        location.href = "index.html";
-      }, 2500);
-
     } catch (e) {
-      showError("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + e.message);
+      alert("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + e.message);
     }
   }
-
-  function showError(msg) {
-    document.getElementById("loadingState").style.display = "none";
-    document.getElementById("messageState").style.display = "block";
-    document.getElementById("statusTitle").innerText = "عذراً، حدث خطأ";
-    document.getElementById("statusTitle").style.color = "#e53e3e";
-    document.getElementById("statusText").innerText = msg;
-  }
-
-  window.onload = verifyAccount;
 </script>
+
 </body>
 </html>
