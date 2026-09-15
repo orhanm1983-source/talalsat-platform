@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تفعيل الحساب - منصة TALALSAT</title>
+<style>
+  :root {
+    --primary: #2b6cb0;
+    --bg-color: #f7fafc;
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+  }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
+  .card { background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); width: 400px; text-align: center; border: 1px solid var(--border-color); }
+  .logo-container { margin-bottom: 25px; }
+  .platform-logo { width: 220px; max-width: 100%; height: auto; }
+  h2 { color: var(--primary); margin-bottom: 15px; }
+  p { font-size: 15px; color: #4a5568; line-height: 1.6; }
+  .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-container">
+    <img src="logo.png" alt="شعار منصة TALALSAT" class="platform-logo">
+  </div>
+  
+  <div id="loadingState">
+    <h2>جاري تفعيل الحساب...</h2>
+    <div class="spinner"></div>
+    <p>يرجى الانتظار قليلاً بينما نتحقق من بريدك الإلكتروني ونفعل حسابك في المنصة.</p>
+  </div>
+
+  <div id="messageState" style="display:none;">
+    <h2 id="statusTitle">تم التفعيل بنجاح!</h2>
+    <p id="statusText">جاري تحويلك إلى المنصة...</p>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCvAPQ8w0anK6CkmLJuHjNMSlSf4trf0cU",
+    authDomain: "talalsat-platform.firebaseapp.com",
+    projectId: "talalsat-platform",
+    storageBucket: "talalsat-platform.firebasestorage.app",
+    messagingSenderId: "463319836026",
+    appId: "1:463319836026:web:55cff426cc874cc8d062c3",
+    measurementId: "G-NJ8R5QNP9H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function verifyAccount() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+
+    if (!email) {
+      showError("رابط التفعيل غير صالح أو مفقود.");
+      return;
+    }
+
+    try {
+      const q = query(collection(db, "users"), where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        showError("لم يتم العثور على حساب مرتبط بهذا البريد الإلكتروني.");
+        return;
+      }
+
+      const userDocRef = doc(db, "users", querySnapshot.docs[0].id);
+      let userData = querySnapshot.docs[0].data();
+
+      // تحديث حالة الحساب إلى active (مفعل)
+      await updateDoc(userDocRef, { status: "active" });
+      userData.status = "active";
+
+      // تسجيل دخول الطالب مباشرة وتوجيهه للمنصة
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("messageState").style.display = "block";
+      document.getElementById("statusTitle").innerText = "تم تفعيل حسابك بنجاح! 🎉";
+      document.getElementById("statusText").innerText = "أهلاً بك في منصة TALALSAT. جاري تحويلك للصفحة الرئيسية...";
+
+      setTimeout(() => {
+        location.href = "index.html";
+      }, 2500);
+
+    } catch (e) {
+      showError("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + e.message);
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("messageState").style.display = "block";
+    document.getElementById("statusTitle").innerText = "عذراً، حدث خطأ";
+    document.getElementById("statusTitle").style.color = "#e53e3e";
+    document.getElementById("statusText").innerText = msg;
+  }
+
+  window.onload = verifyAccount;
+</script>
+</body>
+</html>
