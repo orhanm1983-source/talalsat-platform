@@ -17,7 +17,10 @@
   }
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
   .card { background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); width: 380px; border: 1px solid var(--border-color); }
-  .logo-title { text-align: center; color: var(--primary); margin-bottom: 25px; font-size: 28px; font-weight: bold; letter-spacing: 0.5px; }
+  
+  .logo-container { text-align: center; margin-bottom: 25px; }
+  .platform-logo { width: 280px !important; height: auto !important; max-width: 100% !important; display: inline-block !important; object-fit: contain; }
+
   .tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); }
   .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: 600; color: #718096; transition: all 0.3s ease; }
   .tab.active { border-bottom: 3px solid var(--primary); color: var(--primary); }
@@ -29,13 +32,16 @@
   button:hover { background: var(--primary-hover); }
   .btn-accent { background: var(--accent); }
   .btn-accent:hover { background: #2c7a7b; }
-  .verify-box { display: none; background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 15px; }
+  .info-box { display: none; background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; font-size: 13px; color: #4a5568; }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="logo-title">TALALSAT</div>
+  <div class="logo-container">
+    <img src="logo.png" alt="شعار منصة TALALSAT" class="platform-logo">
+  </div>
+
   <div class="tabs">
     <div class="tab active" onclick="switchTab('login')">تسجيل الدخول</div>
     <div class="tab" onclick="switchTab('register')">حساب جديد</div>
@@ -44,19 +50,17 @@
   <div id="loginForm" class="form-group active">
     <input id="loginEmail" type="email" placeholder="البريد الإلكتروني">
     <input id="loginPassword" type="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
+    <button type="button" onclick="login()">دخول</button>
   </div>
 
   <div id="registerForm" class="form-group">
     <input id="regName" type="text" placeholder="الاسم الكامل">
     <input id="regEmail" type="email" placeholder="البريد الإلكتروني">
     <input id="regPassword" type="password" placeholder="كلمة المرور">
-    <button id="btnSendCode" class="btn-accent" onclick="sendVerificationCode()">إرسال كود التفعيل</button>
+    <button type="button" id="btnSendCode" class="btn-accent" onclick="sendVerificationEmail()">إنشاء حساب وإرسال رابط التفعيل</button>
 
-    <div id="verifyBox" class="verify-box">
-      <p style="margin:0 0 10px 0; font-size:13px; color:#4a5568;">تم إرسال كود التفعيل إلى بريدك الإلكتروني:</p>
-      <input id="inputCode" type="text" placeholder="أدخل كود التفعيل">
-      <button onclick="verifyAndRegister()" style="background:#3182ce;">تأكيد وتفعيل الحساب</button>
+    <div id="infoBox" class="info-box">
+      تم إرسال رابط التفعيل إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد والضغط على الرابط لتفعيل حسابك والدخول للمنصة.
     </div>
   </div>
 </div>
@@ -78,9 +82,9 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  (function(){
+  try {
      emailjs.init("kaJmN11jIcapGxZSh");
-  })();
+  } catch(e) { console.log(e); }
 
   window.switchTab = function(tab) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -95,10 +99,9 @@
     }
   }
 
-  let generatedCode = null;
-  window.sendVerificationCode = async function() {
-    let email = document.getElementById("regEmail").value.trim();
+  window.sendVerificationEmail = async function() {
     let name = document.getElementById("regName").value.trim();
+    let email = document.getElementById("regEmail").value.trim();
     let password = document.getElementById("regPassword").value.trim();
 
     if (!name || !email || !password) {
@@ -117,50 +120,32 @@
       console.log(e);
     }
 
-    generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    sessionStorage.setItem("pendingVerificationCode", generatedCode);
-
-    let templateParams = {
-        from_name: "منصة TALALSAT",
-        message: "كود التفعيل الخاص بالحساب الجديد هو: " + generatedCode + "\nالاسم: " + name + "\nالبريد: " + email
-    };
-
-    emailjs.send("service_oq1o551", "template_my0rh1i", templateParams)
-    .then(() => {
-        alert("تم إرسال كود التفعيل إلى بريدك الإلكتروني بنجاح!");
-        document.getElementById("verifyBox").style.display = "block";
-        document.getElementById("btnSendCode").style.display = "none";
-    })
-    .catch(err => {
-        alert("حدث خطأ أثناء إرسال الكود عبر الإيميل، الكود التجريبي: " + generatedCode);
-        document.getElementById("verifyBox").style.display = "block";
-        document.getElementById("btnSendCode").style.display = "none";
-    });
-  }
-
-  window.verifyAndRegister = async function() {
-    let userCode = document.getElementById("inputCode").value.trim();
-    let savedCode = sessionStorage.getItem("pendingVerificationCode");
-
-    if (!userCode || userCode !== savedCode) {
-      alert("كود التفعيل غير صحيح!");
-      return;
-    }
-
-    let email = document.getElementById("regEmail").value.trim();
-    let name = document.getElementById("regName").value.trim();
-    let password = document.getElementById("regPassword").value.trim();
-
-    let newUser = { name, email, password, role: "student", status: "active" };
+    let newUser = { name, email, password, role: "student", status: "pending" };
 
     try {
       await addDoc(collection(db, "users"), newUser);
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
-      sessionStorage.removeItem("pendingVerificationCode");
-      alert("تم تفعيل حسابك بنجاح!");
-      location.href = "index.html";
+      
+      let verifyUrl = window.location.href.replace("login.html", "verify.html") + "?email=" + encodeURIComponent(email);
+
+      let templateParams = {
+          from_name: "منصة TALALSAT",
+          to_email: email,
+          message: `مرحباً ${name},\n\nشكراً لتسجيلك في منصة TALALSAT. لتفعيل حسابك والبدء بالدخول، يرجى الضغط على الرابط التالي:\n\n${verifyUrl}`
+      };
+
+      emailjs.send("service_oq1o551", "template_my0rh1i", templateParams)
+      .then(() => {
+          document.getElementById("infoBox").style.display = "block";
+          document.getElementById("btnSendCode").style.display = "none";
+      })
+      .catch(err => {
+          alert("حدث خطأ أثناء إرسال البريد. الرابط التجريبي للتفعيل: " + verifyUrl);
+          document.getElementById("infoBox").style.display = "block";
+          document.getElementById("btnSendCode").style.display = "none";
+      });
+
     } catch (e) {
-      alert("حدث خطأ أثناء حفظ الحساب: " + e.message);
+      alert("حدث خطأ أثناء إنشاء الحساب: " + e.message);
     }
   }
 
@@ -186,10 +171,14 @@
       
       if (!querySnapshot.empty) {
         let userData = querySnapshot.docs[0].data();
+        if(userData.status === "pending") {
+          alert("حسابك بانتظار التفعيل. يرجى الضغط على رابط التفعيل المرسل إلى بريدك الإلكتروني.");
+          return;
+        }
         localStorage.setItem("currentUser", JSON.stringify(userData));
         location.href = "index.html";
       } else {
-        alert("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+        alert("البريد الإلكتروني أو كلمة المرور غير صحيحة، أو أن الحساب لم يتم تفعيله.");
       }
     } catch (e) {
       alert("خطأ في الاتصال بقاعدة البيانات.");
