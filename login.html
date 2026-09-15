@@ -3,71 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول - منصة TALALSAT</title>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<title>تسجيل الدخول والإنشاء - منصة TALALSAT</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
     --primary: #2b6cb0;
-    --primary-hover: #2c5282;
+    --primary-hover: #1a4975;
     --accent: #319795;
-    --bg-color: #f7fafc;
+    --danger: #e53e3e;
+    --success: #38a169;
+    --bg-color: #f4f7f6;
     --card-bg: #ffffff;
-    --text-color: #2d3748;
     --border-color: #e2e8f0;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --shadow-soft: 0 10px 30px -5px rgba(43, 108, 176, 0.08);
   }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
-  .card { background: var(--card-bg); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); width: 380px; border: 1px solid var(--border-color); }
-  
-  .logo-container { text-align: center; margin-bottom: 25px; }
-  .platform-logo { width: 280px !important; height: auto !important; max-width: 100% !important; display: inline-block !important; object-fit: contain; }
-
-  .tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); }
-  .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: 600; color: #718096; transition: all 0.3s ease; }
-  .tab.active { border-bottom: 3px solid var(--primary); color: var(--primary); }
-  .form-group { display: none; }
-  .form-group.active { display: block; }
-  input { width: 100%; padding: 12px 15px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #f8fafc; transition: all 0.2s; }
-  input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1); }
-  button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 15px; transition: background 0.2s; }
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: var(--bg-color); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    color: #2d3748;
+  }
+  .auth-container {
+    background: var(--card-bg);
+    padding: 30px 40px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    width: 380px;
+    border: 1px solid var(--border-color);
+  }
+  h2 { color: var(--primary); text-align: center; margin-bottom: 25px; }
+  input { 
+    width: 100%; 
+    padding: 12px 15px; 
+    margin: 10px 0 18px 0; 
+    display: block; 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius-sm); 
+    box-sizing: border-box; 
+    font-size: 14px; 
+    background: #f8fafc; 
+  }
+  input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.12); }
+  button { 
+    width: 100%; 
+    padding: 12px; 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    border-radius: var(--radius-sm); 
+    font-weight: 700; 
+    font-size: 15px; 
+    cursor: pointer; 
+    transition: background 0.2s; 
+  }
   button:hover { background: var(--primary-hover); }
-  .btn-accent { background: var(--accent); }
-  .btn-accent:hover { background: #2c7a7b; }
-  .info-box { display: none; background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; font-size: 13px; color: #4a5568; }
+  .switch-text { text-align: center; margin-top: 15px; font-size: 13.5px; color: #718096; }
+  .switch-text a { color: var(--primary); text-decoration: none; font-weight: bold; cursor: pointer; }
+  .switch-text a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="logo-container">
-    <img src="logo.png" alt="شعار منصة TALALSAT" class="platform-logo">
+<div class="auth-container">
+  <!-- نموذج تسجيل الدخول -->
+  <div id="loginFormSection">
+    <h2>تسجيل الدخول</h2>
+    <label style="font-size: 13px; font-weight: bold;">البريد الإلكتروني:</label>
+    <input id="loginEmail" type="email" placeholder="example@gmail.com">
+    
+    <label style="font-size: 13px; font-weight: bold;">كلمة المرور:</label>
+    <input id="loginPassword" type="password" placeholder="••••••••">
+    
+    <button onclick="loginUser()">دخول</button>
+    <div class="switch-text">
+      ليس لديك حساب؟ <a onclick="toggleForms()">إنشاء حساب جديد</a>
+    </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('login')">تسجيل الدخول</div>
-    <div class="tab" onclick="switchTab('register')">حساب جديد</div>
-  </div>
+  <!-- نموذج إنشاء حساب جديد -->
+  <div id="registerFormSection" style="display: none;">
+    <h2>إنشاء حساب طالب</h2>
+    <label style="font-size: 13px; font-weight: bold;">الاسم الكامل:</label>
+    <input id="regName" type="text" placeholder="أدخل اسمك الثلاثي">
 
-  <div id="loginForm" class="form-group active">
-    <input id="loginEmail" type="email" placeholder="البريد الإلكتروني">
-    <input id="loginPassword" type="password" placeholder="كلمة المرور">
-    <button type="button" onclick="login()">دخول</button>
-  </div>
-
-  <div id="registerForm" class="form-group">
-    <input id="regName" type="text" placeholder="الاسم الكامل">
-    <input id="regEmail" type="email" placeholder="البريد الإلكتروني">
-    <input id="regPassword" type="password" placeholder="كلمة المرور">
-    <button type="button" id="btnSendCode" class="btn-accent" onclick="sendVerificationEmail()">إنشاء حساب وإرسال رابط التفعيل</button>
-
-    <div id="infoBox" class="info-box">
-      تم إرسال رابط التفعيل إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد والضغط على الرابط لتفعيل حسابك والدخول للمنصة.
+    <label style="font-size: 13px; font-weight: bold;">البريد الإلكتروني:</label>
+    <input id="regEmail" type="email" placeholder="example@gmail.com">
+    
+    <label style="font-size: 13px; font-weight: bold;">كلمة المرور:</label>
+    <input id="regPassword" type="password" placeholder="••••••••">
+    
+    <button onclick="registerUser()" style="background: var(--accent);">تسجيل حساب جديد</button>
+    <div class="switch-text">
+      لديك حساب بالفعل؟ <a onclick="toggleForms()">تسجيل الدخول</a>
     </div>
   </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCvAPQ8w0anK6CkmLJuHjNMSlSf4trf0cU",
@@ -82,108 +122,112 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  try {
-     emailjs.init("kaJmN11jIcapGxZSh");
-  } catch(e) { console.log(e); }
-
-  window.switchTab = function(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.form-group').forEach(f => f.classList.remove('active'));
-    
-    if(tab === 'login') {
-      document.querySelectorAll('.tab')[0].classList.add('active');
-      document.getElementById('loginForm').classList.add('active');
+  window.toggleForms = function() {
+    let loginSec = document.getElementById("loginFormSection");
+    let regSec = document.getElementById("registerFormSection");
+    if (loginSec.style.display === "none") {
+      loginSec.style.display = "block";
+      regSec.style.display = "none";
     } else {
-      document.querySelectorAll('.tab')[1].classList.add('active');
-      document.getElementById('registerForm').classList.add('active');
+      loginSec.style.display = "none";
+      regSec.style.display = "block";
     }
   }
 
-  window.sendVerificationEmail = async function() {
+  // تسجيل حساب جديد مع منع تكرار البريد الإلكتروني أو الاسم
+  window.registerUser = async function() {
     let name = document.getElementById("regName").value.trim();
     let email = document.getElementById("regEmail").value.trim();
     let password = document.getElementById("regPassword").value.trim();
 
     if (!name || !email || !password) {
-      alert("يرجى إكمال كافة البيانات أولاً");
+      alert("يرجى تعبئة جميع الحقول المطلوبة.");
       return;
     }
 
     try {
-      const q = query(collection(db, "users"), where("email", "==", email));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        alert("هذا البريد مسجل مسبقاً!");
+      // 1. التحقق من عدم تكرار البريد الإلكتروني في قاعدة البيانات
+      const emailQuery = query(collection(db, "users"), where("email", "==", email));
+      const emailSnap = await getDocs(emailQuery);
+      if (!emailSnap.empty) {
+        alert("خطأ: هذا البريد الإلكتروني مسجل مسبقاً بحساب آخر! يرجى استخدام بريد مختلف.");
         return;
       }
-    } catch(e) {
-      console.log(e);
-    }
 
-    let newUser = { name, email, password, role: "student", status: "pending" };
+      // 2. التحقق من عدم تكرار الاسم في قاعدة البيانات
+      const nameQuery = query(collection(db, "users"), where("name", "==", name));
+      const nameSnap = await getDocs(nameQuery);
+      if (!nameSnap.empty) {
+        alert("خطأ: هذا الاسم مسجل مسبقاً! يرجى إضافة اسم العائلة أو اسم مميز.");
+        return;
+      }
 
-    try {
-      await addDoc(collection(db, "users"), newUser);
+      // 3. حفظ الطالب الجديد في قاعدة البيانات
+      let verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       
-      let verifyUrl = window.location.href.replace("login.html", "verify.html") + "?email=" + encodeURIComponent(email);
-
-      let templateParams = {
-          from_name: "منصة TALALSAT",
-          to_email: email,
-          message: `مرحباً ${name},\n\nشكراً لتسجيلك في منصة TALALSAT. لتفعيل حسابك والبدء بالدخول، يرجى الضغط على الرابط التالي:\n\n${verifyUrl}`
-      };
-
-      emailjs.send("service_oq1o551", "template_my0rh1i", templateParams)
-      .then(() => {
-          document.getElementById("infoBox").style.display = "block";
-          document.getElementById("btnSendCode").style.display = "none";
-      })
-      .catch(err => {
-          alert("حدث خطأ أثناء إرسال البريد. الرابط التجريبي للتفعيل: " + verifyUrl);
-          document.getElementById("infoBox").style.display = "block";
-          document.getElementById("btnSendCode").style.display = "none";
+      await addDoc(collection(db, "users"), {
+        name: name,
+        email: email,
+        password: password,
+        role: "student",
+        isPaid: false,
+        status: "pending",
+        verificationCode: verificationCode,
+        createdAt: Date.now()
       });
 
+      alert("تم إنشاء الحساب بنجاح! رمز التحقق الخاص بك هو: " + verificationCode);
+      
+      // الانتقال لصفحة التفعيل مع إرسال الإيميل
+      location.href = `verify.html?email=${encodeURIComponent(email)}`;
+      
     } catch (e) {
-      alert("حدث خطأ أثناء إنشاء الحساب: " + e.message);
+      alert("حدث خطأ أثناء التسجيل: " + e.message);
     }
-  }
+  };
 
-  window.login = async function() {
+  // تسجيل الدخول
+  window.loginUser = async function() {
     let email = document.getElementById("loginEmail").value.trim();
     let password = document.getElementById("loginPassword").value.trim();
 
     if (!email || !password) {
-      alert("يرجى إدخال البريد الإلكتروني وكلمة المرور");
-      return;
-    }
-
-    if (email === "admin@talalacademy.com" && password === "123") {
-      let adminUser = { name: "المدير", role: "admin", email: email };
-      localStorage.setItem("currentUser", JSON.stringify(adminUser));
-      location.href = "admin.html";
+      alert("يرجى إدخال البريد وكلمة المرور.");
       return;
     }
 
     try {
+      // التحقق من حساب المدير من الإعدادات المخزنة
+      const adminDoc = await getDoc(doc(db, "settings", "adminCredentials"));
+      let adminData = adminDoc.exists() ? adminDoc.data() : { email: "admin@talalacademy.com", password: "123" };
+
+      if (email === adminData.email && password === adminData.password) {
+        let adminUser = { name: "المدير", email: adminData.email, role: "admin", isPaid: true };
+        localStorage.setItem("currentUser", JSON.stringify(adminUser));
+        location.href = "admin.html";
+        return;
+      }
+
+      // التحقق من حسابات الطلاب في قاعدة البيانات
       const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
-        let userData = querySnapshot.docs[0].data();
-        if(userData.status === "pending") {
-          alert("حسابك بانتظار التفعيل. يرجى الضغط على رابط التفعيل المرسل إلى بريدك الإلكتروني.");
-          return;
-        }
+        let userData = null;
+        querySnapshot.forEach((docSnap) => {
+          userData = { id: docSnap.id, ...docSnap.data() };
+        });
+
         localStorage.setItem("currentUser", JSON.stringify(userData));
         location.href = "index.html";
       } else {
-        alert("البريد الإلكتروني أو كلمة المرور غير صحيحة، أو أن الحساب لم يتم تفعيله.");
+        alert("بيانات الدخول غير صحيحة أو الحساب غير مسجل.");
       }
     } catch (e) {
-      alert("خطأ في الاتصال بقاعدة البيانات.");
+      alert("خطأ في الاتصال بقاعدة البيانات: " + e.message);
     }
-  }
+  };
 </script>
+
 </body>
 </html>
