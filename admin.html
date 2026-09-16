@@ -74,6 +74,9 @@
   .btn-success { background: #38a169; color: white; padding: 7px 14px; font-size: 13px; border-radius: var(--radius-sm); border: none; font-weight: 700; }
   .btn-success:hover { background: #2f855a; }
 
+  .btn-warning { background: #d69e2e; color: white; padding: 7px 14px; font-size: 13px; border-radius: var(--radius-sm); border: none; font-weight: 700; }
+  .btn-warning:hover { background: #b7791f; }
+
   .btn-nav { background: var(--primary); color: white; text-decoration: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 700; }
   .btn-nav:hover { background: var(--primary-hover); }
 
@@ -203,7 +206,6 @@ function closeModal(modalId) {
     <p>تعديل بريد وكلمة مرور المدير وإنشاء منظمين</p>
   </div>
 
-  <!-- زر كشوفات الأرباح والطلاب (مباشرة تحت حساب المدير) -->
   <div class="dashboard-card" onclick="openModal('modalReports')">
     <i class="fa-solid fa-file-invoice-dollar"></i>
     <h3>كشوفات المنصة والأرباح</h3>
@@ -214,6 +216,12 @@ function closeModal(modalId) {
     <i class="fa-solid fa-gears"></i>
     <h3>إعدادات المنصة</h3>
     <p>شريط الأخبار، الروابط، ومواقع التواصل</p>
+  </div>
+
+  <div class="dashboard-card" onclick="openModal('modalFaqSettings')">
+    <i class="fa-solid fa-circle-question"></i>
+    <h3>الأسئلة الشائعة والمعلومات</h3>
+    <p>مواعيد الاختبارات، تكاليف الاشتراك، والتعليمات</p>
   </div>
 
   <div class="dashboard-card" id="cardPayment" onclick="openModal('modalPaymentSettings')">
@@ -249,8 +257,51 @@ function closeModal(modalId) {
 
 <!-- عرض الدورات والدروس الحالية -->
 <div style="background: var(--card-bg); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-soft); border: 1px solid var(--border-color);">
-  <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-books"></i> الدورات والدروس الحالية</h3>
+  <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-books"></i> الدورات والدروس الحالية (مع خيارات التعديل والإدارة)</h3>
   <div id="coursesContainer">جاري التحميل...</div>
+</div>
+
+<!-- نافذة تعديل الدورة -->
+<div id="modalEditCourse" class="modal-overlay">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('modalEditCourse')">&times;</button>
+    <h2 style="color: var(--primary); margin-top:0;">✏️ تعديل بيانات الدورة</h2>
+    <input type="hidden" id="editCourseId">
+    <div class="grid-2">
+      <div><label>اسم الدورة:</label><input id="editCourseName"></div>
+      <div><label>سعر الدورة ($):</label><input id="editCoursePrice" type="number"></div>
+    </div>
+    <label>وصف الدورة:</label>
+    <textarea id="editCourseDesc" style="height: 80px; resize: vertical;"></textarea>
+    <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0; background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+      <input id="editCourseActive" type="checkbox" style="width: 20px; height: 20px; cursor: pointer; margin:0;">
+      <label for="editCourseActive" style="font-size: 14px; font-weight: bold; color: #2d3748; cursor: pointer; margin:0;">تفعيل ونشر الدورة (تظهر للطلاب وللشراء)</label>
+    </div>
+    <button onclick="updateCourseData()" style="width: 100%; background: var(--primary);"><i class="fa-solid fa-save"></i> حفظ التعديلات</button>
+  </div>
+</div>
+
+<!-- نافذة تعديل الدرس -->
+<div id="modalEditLesson" class="modal-overlay">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('modalEditLesson')">&times;</button>
+    <h2 style="color: var(--primary); margin-top:0;">✏️ تعديل بيانات الدرس</h2>
+    <input type="hidden" id="editLessonId">
+    <label>اختر الدورة التابع لها الدرس:</label>
+    <select id="editLessonCourseSelect"></select>
+    <div class="grid-2" style="margin-top: 15px;">
+      <div><label>عنوان الدرس:</label><input id="editLessonTitle"></div>
+      <div><label>رابط يوتيوب:</label><input id="editLessonVideo"></div>
+    </div>
+    <div>
+      <label>استبدال ملف المرفقات (اختياري):</label>
+      <input id="editLessonFileInput" type="file" style="background: #fff; padding: 8px;">
+    </div>
+    <div style="margin-top: 10px;">
+      <label>رابط الاختبار:</label><input id="editLessonQuiz">
+    </div>
+    <button onclick="updateLessonData()" style="width: 100%; margin-top: 10px; background: var(--primary);"><i class="fa-solid fa-save"></i> حفظ تعديلات الدرس</button>
+  </div>
 </div>
 
 <!-- نافذة كشوفات الأرباح والطلاب -->
@@ -258,23 +309,14 @@ function closeModal(modalId) {
   <div class="modal-box">
     <button class="close-modal" onclick="closeModal('modalReports')">&times;</button>
     <h2 style="color: var(--primary); margin-top:0;">📊 كشوفات وأرباح المنصة</h2>
-    
     <div class="grid-2">
-      <div class="stat-box">
-        <h4>إجمالي الطلاب المسجلين</h4>
-        <span id="statTotalStudents">0</span>
-      </div>
-      <div class="stat-box">
-        <h4>الطلاب المفعلين (المدفوع)</h4>
-        <span id="statPaidStudents" style="color: var(--success);">0</span>
-      </div>
+      <div class="stat-box"><h4>إجمالي الطلاب المسجلين</h4><span id="statTotalStudents">0</span></div>
+      <div class="stat-box"><h4>الطلاب المفعلين (المدفوع)</h4><span id="statPaidStudents" style="color: var(--success);">0</span></div>
     </div>
-
-    <div class="stat-box" style="background: #ebf8ff; border-cintrol: #bee3f8;">
+    <div class="stat-box" style="background: #ebf8ff; border-color: #bee3f8;">
       <h4 style="color: #2b6cb0;">إجمالي الأرباح المحققة</h4>
       <span id="statTotalRevenue" style="font-size: 28px;">$0</span>
     </div>
-
     <h4 style="color: #2d3748; margin-top: 20px;">تفصيل الدورات وأسعارها:</h4>
     <div id="coursesRevenueList">جاري حساب الإحصائيات...</div>
   </div>
@@ -309,10 +351,8 @@ function closeModal(modalId) {
   <div class="modal-box">
     <button class="close-modal" onclick="closeModal('modalSettings')">&times;</button>
     <h2 style="color: var(--primary); margin-top:0;">⚙️ إعدادات المنصة العامة</h2>
-    <label>شريط الأخبار:</label>
-    <textarea id="newsTicker" rows="2" placeholder="إعلان المنصة..."></textarea>
-    <label>رابط المصادر العامة:</label>
-    <input id="resourcesLink" placeholder="رابط مجلد الملفات">
+    <label>شريط الأخبار:</label><textarea id="newsTicker" rows="2" placeholder="إعلان المنصة..."></textarea>
+    <label>رابط المصادر العامة:</label><input id="resourcesLink" placeholder="رابط مجلد الملفات">
     <div class="grid-2">
       <div><label>واتساب:</label><input id="whatsapp"></div>
       <div><label>تيليجرام:</label><input id="telegram"></div>
@@ -323,14 +363,24 @@ function closeModal(modalId) {
   </div>
 </div>
 
+<!-- نافذة تعديل الأسئلة الشائعة -->
+<div id="modalFaqSettings" class="modal-overlay">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('modalFaqSettings')">&times;</button>
+    <h2 style="color: var(--primary); margin-top:0;">❓ تعديل الأسئلة الشائعة والمعلومات</h2>
+    <textarea id="adminFaqInput" rows="7" placeholder="مواعيد الاختبارات، تكاليف الاشتراك، والتعليمات..."></textarea>
+    <button onclick="saveFaqSettings()" style="background: var(--primary); width: 100%; margin-top: 10px;"><i class="fa-solid fa-save"></i> حفظ الأسئلة الشائعة</button>
+  </div>
+</div>
+
 <!-- نافذة إعدادات الدفع -->
 <div id="modalPaymentSettings" class="modal-overlay">
   <div class="modal-box">
     <button class="close-modal" onclick="closeModal('modalPaymentSettings')">&times;</button>
     <h2 style="color: var(--primary); margin-top:0;">💳 إعدادات الدفع الإلكتروني (PayPal)</h2>
     <div class="grid-2">
-      <div><label>بريد حساب PayPal:</label><input id="paypalEmail" type="email" placeholder="your-email@paypal.com"></div>
-      <div><label>معرف زر الدفع (Button ID):</label><input id="paypalButtonId" type="text" placeholder="مثال: ABC123XYZ456"></div>
+      <div><label>بريد حساب PayPal:</label><input id="paypalEmail" type="email"></div>
+      <div><label>معرف زر الدفع (Button ID):</label><input id="paypalButtonId" type="text"></div>
     </div>
     <button onclick="savePayPalSettings()" style="background: var(--primary); width: 100%; margin-top: 15px;"><i class="fa-solid fa-save"></i> حفظ إعدادات الدفع</button>
   </div>
@@ -361,20 +411,17 @@ function closeModal(modalId) {
     <button class="close-modal" onclick="closeModal('modalLessonAdd')">&times;</button>
     <h2 style="color: var(--primary); margin-top:0;">🎬 إضافة درس إلى دورة</h2>
     <label>اختر الدورة:</label>
-    <select id="lessonCourseSelect">
-      <option value="">-- اختر الدورة التابعة لها الدرس --</option>
-    </select>
+    <select id="lessonCourseSelect"><option value="">-- اختر الدورة التابعة لها الدرس --</option></select>
     <div class="grid-2" style="margin-top: 15px;">
-      <div><label>عنوان الدرس:</label><input id="lessonTitle" placeholder="مثال: مقدمة الجبر"></div>
+      <div><label>عنوان الدرس:</label><input id="lessonTitle" placeholder="مقدمة الجبر"></div>
       <div><label>رابط يوتيوب:</label><input id="lessonVideo" placeholder="رابط الفيديو..."></div>
     </div>
     <div>
-      <label>رفع ملف المصادر والمرفقات (PDF أو ملفات من جهازك):</label>
+      <label>رفع ملف المرفقات (PDF):</label>
       <input id="lessonFileInput" type="file" style="background: #fff; padding: 8px;">
     </div>
     <div style="margin-top: 10px;">
-      <label>رابط الاختبار (اختياري):</label>
-      <input id="lessonQuiz" placeholder="رابط Google Forms">
+      <label>رابط الاختبار:</label><input id="lessonQuiz" placeholder="رابط Google Forms">
     </div>
     <button onclick="saveLesson()" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-plus"></i> إضافة الدرس للدورة</button>
   </div>
@@ -387,16 +434,12 @@ function closeModal(modalId) {
     <h2 style="color: var(--primary); margin-top:0;">🗑️ إدارة وحذف الدورات والدروس</h2>
     <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px;">
       <label>حذف دورة بالكامل:</label>
-      <select id="deleteCourseSelect" style="margin-top: 10px;">
-        <option value="">-- اختر الدورة المراد حذفها --</option>
-      </select>
+      <select id="deleteCourseSelect" style="margin-top: 10px;"><option value="">-- اختر الدورة المراد حذفها --</option></select>
       <button class="btn-danger" style="width: 100%; margin-top: 10px;" onclick="deleteSelectedCourse()">حذف الدورة المحددة</button>
     </div>
     <div style="background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
       <label>حذف درس معين:</label>
-      <select id="deleteLessonSelect" style="margin-top: 10px;">
-        <option value="">-- اختر الدرس المراد حذفه --</option>
-      </select>
+      <select id="deleteLessonSelect" style="margin-top: 10px;"><option value="">-- اختر الدرس المراد حذفه --</option></select>
       <button class="btn-danger" style="width: 100%; margin-top: 10px;" onclick="deleteSelectedLesson()">حذف الدرس المحدد</button>
     </div>
   </div>
@@ -407,7 +450,6 @@ function closeModal(modalId) {
   <div class="modal-box" style="max-width: 700px;">
     <button class="close-modal" onclick="closeModal('modalStudents')">&times;</button>
     <h2 style="color: var(--primary); margin-top:0;">👥 حسابات الطلاب واشتراكات الدفع</h2>
-    <p style="color: #718096; font-size: 13px;">من هنا يمكنك تفعيل وصول الطلاب يدوياً أو حذف الحسابات:</p>
     <div id="studentsList">جاري تحميل قائمة الطلاب...</div>
   </div>
 </div>
@@ -428,6 +470,9 @@ function closeModal(modalId) {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  let allCoursesData = {};
+  let allLessonsData = {};
 
   if (currentUser.role === "manager") {
     document.getElementById("cardAdminAccount").style.display = "none";
@@ -450,6 +495,7 @@ function closeModal(modalId) {
         let data = globalSnap.data();
         document.getElementById("newsTicker").value = data.newsTicker || "";
         document.getElementById("resourcesLink").value = data.globalResources || "";
+        document.getElementById("adminFaqInput").value = data.faqText || "";
       }
       const paySnap = await getDoc(doc(db, "settings", "payment"));
       if (paySnap.exists()) {
@@ -495,10 +541,19 @@ function closeModal(modalId) {
       await setDoc(doc(db, "settings", "general"), {
         newsTicker: document.getElementById("newsTicker").value.trim(),
         globalResources: document.getElementById("resourcesLink").value.trim()
-      });
+      }, { merge: true });
       alert("تم حفظ الإعدادات بنجاح!");
       closeModal('modalSettings');
     } catch (e) { alert("خطأ: " + e.message); }
+  }
+
+  window.saveFaqSettings = async function() {
+    let faqText = document.getElementById("adminFaqInput").value;
+    try {
+      await setDoc(doc(db, "settings", "general"), { faqText: faqText }, { merge: true });
+      alert("تم حفظ الأسئلة الشائعة والمعلومات بنجاح!");
+      closeModal('modalFaqSettings');
+    } catch (e) { alert("حدث خطأ أثناء الحفظ."); }
   }
 
   window.savePayPalSettings = async function() {
@@ -529,6 +584,41 @@ function closeModal(modalId) {
     } catch (e) { alert("خطأ: " + e.message); }
   }
 
+  // فتح نافذة تعديل الدورة وتعبئة بياناتها الحالية
+  window.openEditCourseModal = function(courseId) {
+    let course = allCoursesData[courseId];
+    if (!course) return;
+    document.getElementById("editCourseId").value = courseId;
+    document.getElementById("editCourseName").value = course.name || "";
+    document.getElementById("editCoursePrice").value = course.price || 0;
+    document.getElementById("editCourseDesc").value = course.description || "";
+    document.getElementById("editCourseActive").checked = course.isPublished === true;
+    openModal('modalEditCourse');
+  }
+
+  // حفظ تعديلات الدورة في الفايربيس
+  window.updateCourseData = async function() {
+    let courseId = document.getElementById("editCourseId").value;
+    let name = document.getElementById("editCourseName").value.trim();
+    let price = document.getElementById("editCoursePrice").value.trim();
+    let description = document.getElementById("editCourseDesc").value.trim();
+    let isPublished = document.getElementById("editCourseActive").checked;
+
+    if (!name || !price) { alert("يرجى إدخال اسم الدورة والسعر"); return; }
+
+    try {
+      await updateDoc(doc(db, "coursesList", courseId), {
+        name,
+        price: Number(price),
+        description,
+        isPublished
+      });
+      alert("تم تحديث الدورة بنجاح!");
+      closeModal('modalEditCourse');
+      loadDataToAdmin();
+    } catch (e) { alert("خطأ أثناء التحديث: " + e.message); }
+  }
+
   window.saveLesson = async function() {
     let courseId = document.getElementById("lessonCourseSelect").value;
     let title = document.getElementById("lessonTitle").value.trim();
@@ -556,6 +646,60 @@ function closeModal(modalId) {
       reader.onload = function(e) { processAndSave(e.target.result, file.name); };
       reader.readAsDataURL(file);
     } else { processAndSave("", ""); }
+  }
+
+  // فتح نافذة تعديل الدرس وتعبئة بياناته
+  window.openEditLessonModal = function(lessonId) {
+    let lesson = allLessonsData[lessonId];
+    if (!lesson) return;
+    document.getElementById("editLessonId").value = lessonId;
+    document.getElementById("editLessonTitle").value = lesson.title || "";
+    document.getElementById("editLessonVideo").value = lesson.video || "";
+    document.getElementById("editLessonQuiz").value = lesson.quizLink || "";
+
+    // تعبئة قائمة الدورات داخل نافذة تعديل الدرس
+    let selectHtml = "";
+    for (let cId in allCoursesData) {
+      let selected = cId === lesson.courseId ? "selected" : "";
+      selectHtml += `<option value="${cId}" ${selected}>${allCoursesData[cId].name}</option>`;
+    }
+    document.getElementById("editLessonCourseSelect").innerHTML = selectHtml;
+    openModal('modalEditLesson');
+  }
+
+  // حفظ تعديلات الدرس في الفايربيس
+  window.updateLessonData = async function() {
+    let lessonId = document.getElementById("editLessonId").value;
+    let courseId = document.getElementById("editLessonCourseSelect").value;
+    let title = document.getElementById("editLessonTitle").value.trim();
+    let video = document.getElementById("editLessonVideo").value.trim();
+    let quizLink = document.getElementById("editLessonQuiz").value.trim();
+    let fileInput = document.getElementById("editLessonFileInput");
+
+    if (!courseId || !title || !video) { alert("يرجى ملء الحقول المطلوبة للدرس"); return; }
+
+    let performUpdate = async (fileData, fileName) => {
+      try {
+        let updatePayload = { courseId, title, video, quizLink };
+        if (fileData) {
+          updatePayload.fileData = fileData;
+          updatePayload.fileName = fileName;
+        }
+        await updateDoc(doc(db, "lessons", lessonId), updatePayload);
+        alert("تم تحديث الدرس بنجاح!");
+        closeModal('modalEditLesson');
+        loadDataToAdmin();
+      } catch (e) { alert("خطأ أثناء تحديث الدرس: " + e.message); }
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+      let file = fileInput.files[0];
+      let reader = new FileReader();
+      reader.onload = function(e) { performUpdate(e.target.result, file.name); };
+      reader.readAsDataURL(file);
+    } else {
+      performUpdate(null, null);
+    }
   }
 
   window.deleteSelectedCourse = async function() {
@@ -593,12 +737,12 @@ function closeModal(modalId) {
       let selectHtml = '<option value="">-- اختر الدورة التابعة لها الدرس --</option>';
       let deleteCourseHtml = '<option value="">-- اختر الدورة المراد حذفها --</option>';
       let coursesHtml = "";
-      let coursesMap = {};
+      allCoursesData = {};
 
       coursesSnap.forEach((docSnap) => {
         let course = docSnap.data();
         let id = docSnap.id;
-        coursesMap[id] = course;
+        allCoursesData[id] = course;
         selectHtml += `<option value="${id}">${course.name}</option>`;
         deleteCourseHtml += `<option value="${id}">${course.name}</option>`;
       });
@@ -606,11 +750,13 @@ function closeModal(modalId) {
       const lessonsSnap = await getDocs(collection(db, "lessons"));
       let lessonsByCourse = {};
       let deleteLessonHtml = '<option value="">-- اختر الدرس المراد حذفه --</option>';
+      allLessonsData = {};
 
       lessonsSnap.forEach((docSnap) => {
         let lesson = docSnap.data();
         let lId = docSnap.id;
-        let parentName = coursesMap[lesson.courseId] ? ` (${coursesMap[lesson.courseId].name})` : "";
+        allLessonsData[lId] = lesson;
+        let parentName = allCoursesData[lesson.courseId] ? ` (${allCoursesData[lesson.courseId].name})` : "";
         deleteLessonHtml += `<option value="${lId}">${lesson.title}${parentName}</option>`;
         if (!lessonsByCourse[lesson.courseId]) lessonsByCourse[lesson.courseId] = [];
         lessonsByCourse[lesson.courseId].push({ id: lId, ...lesson });
@@ -630,10 +776,15 @@ function closeModal(modalId) {
           lessonsByCourse[id].forEach((l, index) => {
             let fileInfo = l.fileName ? `<a href="${l.fileData}" download="${l.fileName}" style="color:var(--primary); font-size:12px; display:inline-block; margin-top:3px;"><i class="fa-solid fa-download"></i> تحميل المرفق (${l.fileName})</a>` : "";
             courseLessonsHtml += `
-              <div style="background: #fff; padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <b style="font-size: 14px; color: #2d3748;">الدرس ${index + 1}: ${l.title}</b>
-                <p style="color: #718096; font-size: 12px; margin: 2px 0 0 0;">رابط يوتيوب: ${l.video}</p>
-                ${fileInfo}
+              <div style="background: #fff; padding: 12px 15px; margin: 8px 0; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <b style="font-size: 14px; color: #2d3748;">الدرس ${index + 1}: ${l.title}</b>
+                  <p style="color: #718096; font-size: 12px; margin: 2px 0 0 0;">رابط يوتيوب: ${l.video}</p>
+                  ${fileInfo}
+                </div>
+                <div>
+                  <button class="btn-warning" onclick="openEditLessonModal('${l.id}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                </div>
               </div>
             `;
           });
@@ -643,13 +794,18 @@ function closeModal(modalId) {
 
         coursesHtml += `
           <div class="course-card">
-            <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px;">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                <h3 style="margin: 0; color: var(--primary); font-size: 18px;">📚 ${course.name}</h3>
-                <span style="background: #edf2f7; padding: 3px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">السعر: $${course.price || 0}</span>
-                ${isPub ? '<span class="badge-active">منشورة ومفعلة</span>' : '<span class="badge-pending">مسودة (غير ظاهرة)</span>'}
+            <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                  <h3 style="margin: 0; color: var(--primary); font-size: 18px;">📚 ${course.name}</h3>
+                  <span style="background: #edf2f7; padding: 3px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">السعر: $${course.price || 0}</span>
+                  ${isPub ? '<span class="badge-active">منشورة ومفعلة</span>' : '<span class="badge-pending">مسودة (غير ظاهرة)</span>'}
+                </div>
+                <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">${course.description || 'لا يوجد وصف مضاف للدورة.'}</p>
               </div>
-              <p style="color: #718096; font-size: 14px; margin: 5px 0 0 0;">${course.description || 'لا يوجد وصف مضاف للدورة.'}</p>
+              <div>
+                <button class="btn-warning" onclick="openEditCourseModal('${id}')"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</button>
+              </div>
             </div>
             <div style="margin-top: 10px;">
               <h4 style="font-size: 14px; color: #4a5568; margin-bottom: 8px;">الدروس الخاصة بهذه الدورة:</h4>
@@ -702,7 +858,6 @@ function closeModal(modalId) {
 
       container.innerHTML = studentsHtml || "<p style='color:#718096; text-align:center;'>لا توجد حسابات طلاب مسجلة.</p>";
       
-      // حساب الأرباح والكشوفات لكل دورة
       document.getElementById("statTotalStudents").innerText = totalStudents;
       document.getElementById("statPaidStudents").innerText = paidStudents;
 
@@ -711,7 +866,6 @@ function closeModal(modalId) {
       coursesSnap.forEach((docSnap) => {
         let course = docSnap.data();
         let price = Number(course.price) || 0;
-        // افتراض الأرباح بناء على عدد الطلاب المفعلين أو قيمة الأسعار
         let courseRevenue = paidStudents * price; 
         totalRevenue += courseRevenue;
         
@@ -758,4 +912,4 @@ function closeModal(modalId) {
   }
 </script>
 </body>
-</html>س
+</html>
