@@ -103,7 +103,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // استخراج البريد الإلكتروني المرسل عبر الرابط
   const urlParams = new URLSearchParams(window.location.search);
   const email = urlParams.get('email');
 
@@ -129,11 +128,11 @@
         let userDocRef = querySnapshot.docs[0].ref;
         let userData = querySnapshot.docs[0].data();
 
-        // مطابقة الكود المدخل مع المخزن في قاعدة البيانات
-        if (userData.code === enteredCode) {
+        // تم تصحيح اسم الحقل هنا ليطابق قاعدة البيانات (verificationCode)
+        if (userData.verificationCode === enteredCode) {
           await updateDoc(userDocRef, {
             status: "active",
-            code: "" // مسح الرمز بعد استخدامه بنجاح
+            verificationCode: "" // مسح الرمز بعد استخدامه بنجاح
           });
 
           alert("تم تفعيل حسابك بنجاح! يمكنك الآن تسجيل الدخول.");
