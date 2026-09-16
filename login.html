@@ -25,7 +25,7 @@
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    height: 100vh; 
+    min-height: 100vh; 
     margin: 0; 
     color: #2d3748;
   }
@@ -37,11 +37,23 @@
     width: 380px;
     border: 1px solid var(--border-color);
   }
-  h2 { color: var(--primary); text-align: center; margin-bottom: 25px; }
+  .logo-container {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  .logo-container img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(43, 108, 176, 0.15);
+  }
+  h2 { color: var(--primary); text-align: center; margin-bottom: 25px; font-size: 22px; }
+  label { font-size: 13px; font-weight: bold; display: block; margin-top: 10px; }
   input { 
     width: 100%; 
     padding: 12px 15px; 
-    margin: 10px 0 18px 0; 
+    margin: 8px 0 15px 0; 
     display: block; 
     border: 1px solid var(--border-color); 
     border-radius: var(--radius-sm); 
@@ -61,6 +73,7 @@
     font-size: 15px; 
     cursor: pointer; 
     transition: background 0.2s; 
+    margin-top: 5px;
   }
   button:hover { background: var(--primary-hover); }
   .switch-text { text-align: center; margin-top: 15px; font-size: 13.5px; color: #718096; }
@@ -73,11 +86,15 @@
 <div class="auth-container">
   <!-- نموذج تسجيل الدخول -->
   <div id="loginFormSection">
+    <div class="logo-container">
+      <img src="logo (2).png" alt="شعار منصة TALALSAT">
+    </div>
     <h2>تسجيل الدخول</h2>
-    <label style="font-size: 13px; font-weight: bold;">البريد الإلكتروني:</label>
+    
+    <label>البريد الإلكتروني:</label>
     <input id="loginEmail" type="email" placeholder="example@gmail.com">
     
-    <label style="font-size: 13px; font-weight: bold;">كلمة المرور:</label>
+    <label>كلمة المرور:</label>
     <input id="loginPassword" type="password" placeholder="••••••••">
     
     <button onclick="loginUser()">دخول</button>
@@ -88,14 +105,18 @@
 
   <!-- نموذج إنشاء حساب جديد -->
   <div id="registerFormSection" style="display: none;">
+    <div class="logo-container">
+      <img src="logo (2).png" alt="شعار منصة TALALSAT">
+    </div>
     <h2>إنشاء حساب طالب</h2>
-    <label style="font-size: 13px; font-weight: bold;">الاسم الكامل:</label>
+    
+    <label>الاسم الكامل:</label>
     <input id="regName" type="text" placeholder="أدخل اسمك الثلاثي">
 
-    <label style="font-size: 13px; font-weight: bold;">البريد الإلكتروني:</label>
+    <label>البريد الإلكتروني:</label>
     <input id="regEmail" type="email" placeholder="example@gmail.com">
     
-    <label style="font-size: 13px; font-weight: bold;">كلمة المرور:</label>
+    <label>كلمة المرور:</label>
     <input id="regPassword" type="password" placeholder="••••••••">
     
     <button onclick="registerUser()" style="background: var(--accent);">تسجيل حساب جديد</button>
@@ -146,7 +167,6 @@
     }
 
     try {
-      // 1. التحقق من عدم تكرار البريد الإلكتروني في قاعدة البيانات
       const emailQuery = query(collection(db, "users"), where("email", "==", email));
       const emailSnap = await getDocs(emailQuery);
       if (!emailSnap.empty) {
@@ -154,7 +174,6 @@
         return;
       }
 
-      // 2. التحقق من عدم تكرار الاسم في قاعدة البيانات
       const nameQuery = query(collection(db, "users"), where("name", "==", name));
       const nameSnap = await getDocs(nameQuery);
       if (!nameSnap.empty) {
@@ -162,7 +181,6 @@
         return;
       }
 
-      // 3. حفظ الطالب الجديد في قاعدة البيانات
       let verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       
       await addDoc(collection(db, "users"), {
@@ -177,8 +195,6 @@
       });
 
       alert("تم إنشاء الحساب بنجاح! رمز التحقق الخاص بك هو: " + verificationCode);
-      
-      // الانتقال لصفحة التفعيل مع إرسال الإيميل
       location.href = `verify.html?email=${encodeURIComponent(email)}`;
       
     } catch (e) {
@@ -197,7 +213,6 @@
     }
 
     try {
-      // التحقق من حساب المدير من الإعدادات المخزنة
       const adminDoc = await getDoc(doc(db, "settings", "adminCredentials"));
       let adminData = adminDoc.exists() ? adminDoc.data() : { email: "admin@talalacademy.com", password: "123" };
 
@@ -208,7 +223,6 @@
         return;
       }
 
-      // التحقق من حسابات الطلاب في قاعدة البيانات
       const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
       const querySnapshot = await getDocs(q);
 
